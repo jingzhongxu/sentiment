@@ -3,6 +3,9 @@ import pickle
 from random import randrange
 import datetime
 
+'''
+this is a moduel for useing pocket method to train perceptron for sentiment classfication
+'''
 class PerceptronPocket:
 	def __init__(self,pickleFile):
 		with open(pickleFile,"rb") as frb:
@@ -16,7 +19,6 @@ class PerceptronPocket:
 		self.w = [0 for i in range(length)]
 		self.pointNum = len(self.points)
 	
-
 
 	def findRandomMistake(self):
 		randomNum = randrange(self.pointNum)
@@ -73,5 +75,9 @@ def test():
 	perceptronObj.pickleobj('./pickle/fre4train.result.out')
 	end = datetime.datetime.now()
 	print('all cost time: ',end-begin)
+
+
 if __name__=='__main__':
 	test()
+
+
