@@ -4,6 +4,7 @@ from random import randrange
 import datetime
 import numpy as np
 
+
 '''
 this is a moduel for useing wiki method to train perceptron for sentiment classfication
 '''

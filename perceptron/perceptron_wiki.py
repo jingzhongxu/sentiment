@@ -2,13 +2,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 from random import randrange
 
+
 '''
 this is a program for train percepton use wiki method
 '''
 class PerceptronPocket:
 	def __init__(self,alpha = 0.5):
-		posSamplePointList = [[randrange(0,70) for j in range(2)]for i in range(20)]
-		negSamplePointList = [[randrange(40,100) for j in range(2)]for i in range(20)]
+		posSamplePointList = [[randrange(0,50) for j in range(2)]for i in range(2000)]
+		negSamplePointList = [[randrange(50,100) for j in range(2)]for i in range(2000)]
 		self.rowPoints = posSamplePointList + negSamplePointList
 		self.boundary = len(posSamplePointList)
 		self.label = [1 if i <self.boundary else -1 for i in range(len(self.rowPoints))]
@@ -26,8 +27,8 @@ class PerceptronPocket:
 
 	def update(self,index):
 		output = self.computeroutput(index)
+		if output==self.label[index]:return
 		for w_index,wi_value in enumerate(self.w):
-			# print(self.alpha*(self.label[index]-output) ,self.points[index][w_index],self.alpha*(self.label[index]-output) * self.points[index][w_index])
 			self.w[w_index] = wi_value + self.alpha*(self.label[index]-output) * self.points[index][w_index]
 	
 	def getFinalTrain(self):

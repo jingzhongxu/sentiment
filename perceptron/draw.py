@@ -2,6 +2,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 from random import randrange
 
+'''
+this is a program for test pocket method for train perceptron,
+'''
 class PerceptronPocket:
 	def __init__(self):
 		posSamplePointList = [[randrange(0,5) for j in range(2)]for i in range(10)]

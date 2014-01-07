@@ -3,6 +3,7 @@ import pickle
 from random import randrange
 import datetime
 
+
 '''
 this is a moduel for useing pocket method to train perceptron for sentiment classfication
 '''
