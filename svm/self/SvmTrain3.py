@@ -210,17 +210,28 @@ class SvmTrain:
 			iterateTime=iterateTime+1
 
 
-			if iterateTime%10==0:
+			if iterateTime%1000==0:
 				print("iterateTime in routine: ",iterateTime," numChanged: ",numChanged)
-				# print("alpha",self.alpha)
-
+				if self.__judegRoutineStop() : break
 
 
 			if iterateTime>50000: 
 				self.__constructW()
 				break	
-
+		
 		if show==True: self.__draw()
+		self.__judegRoutineStop()
+
+
+	def __judegRoutineStop(self,erorrRate=0.1):
+		self.__constructW()
+		result_row = [sum([w_i*x_i for w_i,x_i in zip(self.w,points_item)])+self.b for points_item in self.points]
+		result = [np.sign(resultValue)==self.label[index] for index,resultValue in enumerate(result_row)]
+		error = result.count(False)/self.pointsNums
+		print(error)
+		if error<erorrRate: return True
+		else: return False
+
 
 	def __draw(self):
 		X = np.arange(-10,210,10)
