@@ -1,3 +1,3 @@
-1.应用情感词语作为特征，共计2081个词，NB的准确率在74%(pos 58%, neg 90%),LR在53.5%(pos 76%, neg 31%)，libsvm结果是58.5%,maxent with gis是41.5%(pos 32%, neg 51%)
+1.应用知网开发语料库中的正负面情感词语作为特征，共计2081个词，NB的准确率在74%(pos 58%, neg 90%),LR在53.5%(pos 76%, neg 31%)，libsvm结果是58.5%,maxent with gis是41.5%(pos 32%, neg 51%)
 2.应用所有的语料中所有的词语作为特征，共计6036个词，NB的准确率在95%(pos 90%, neg 100%),LR在96%(pos 93%，neg 99%),libsvm是90.5%，maxent with gis是80%(pos 78%, neg 82%)
 3.应用所有的训练语料中所有的词语作为特征，共计5869个词，NB的准确率在94.5%(pos 89%, neg 100%),LR在92.5%(pos 88%, neg 97%)，libsvm是90.5%，maxent with gis是75.5%(pos 64%, neg 87%)
