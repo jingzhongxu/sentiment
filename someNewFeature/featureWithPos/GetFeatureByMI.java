@@ -165,7 +165,7 @@ public class GetFeatureByMI
     		int  c_neg = negWordOccurTimes.containsKey(key)? (n_neg-negWordOccurTimes.get(key)):(n_neg);//属于neg类但没有包含key这个特征的文档频数
     		double I_neg_key = Math.log((double)a_neg*N/((a_neg+c_neg)*(a_neg+b_neg)));
 
-    		double finalValue = pro_pos*I_pos_key + pro_neg*I_neg_key;
+    		double finalValue = (pro_pos*I_pos_key>pro_neg*I_neg_key)?pro_pos*I_pos_key:pro_neg*I_neg_key;
     		featureMI.put(key,finalValue);
 
     		System.out.println(key+"   a_pos="+a_pos+"  b_pos="+b_pos+" c_pos="+c_pos+"  I_pos_key="+I_pos_key +"  a_neg="+a_neg+" b_neg="+b_neg+" c_neg="+c_neg + " I_neg_key="+I_neg_key +" finalValue="+finalValue);
@@ -186,14 +186,16 @@ public class GetFeatureByMI
     	obj.outputArrayList(new ArrayList<String>(Arrays.asList(temp[0].split("/"))));
     	System.out.println("---------------------------------------");
 
-    	obj.outputHashMap(obj.posWordOccurTimes);
-    	obj.outputHashMap(obj.negWordOccurTimes);
+    	// obj.outputHashMap(obj.posWordOccurTimes);
+    	// obj.outputHashMap(obj.negWordOccurTimes);
 
     	// obj.outputPOSResult("./posresult.txt");
     	// obj.outputWordFeature("./feature.txt");
     	System.out.println("---------------------------------------");
     	obj.getFeatureByMI();
-    	obj.outputHashMap(obj.featureMI);
+    	// obj.outputHashMap(obj.featureMI);
+
+
 	}
 
 	public void outputArrayList(ArrayList<String> list)
