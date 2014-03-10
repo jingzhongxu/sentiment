@@ -14,6 +14,9 @@ import java.util.HashMap;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
 
 import edu.fudan.ml.types.Dictionary;
 import edu.fudan.nlp.cn.tag.CWSTagger;
@@ -145,9 +148,13 @@ public class GetFeatureByMI
     	}    	
     }
 
-    public void getFeatureByMI()
+    public void getFeatureByMI() throws Exception
     {
-    	int N =posDocuments.size() + negDocuments.size();// 训练文档中的总数
+    	if(negWordOccurTimes.size()==0)
+            this.posAndFilter();
+
+
+        int N =posDocuments.size() + negDocuments.size();// 训练文档中的总数
     	int n_pos = posDocuments.size();
     	int n_neg = negDocuments.size();
     	double pro_pos = (double)n_pos/N;
@@ -168,22 +175,22 @@ public class GetFeatureByMI
     		double finalValue = (pro_pos*I_pos_key>pro_neg*I_neg_key)?pro_pos*I_pos_key:pro_neg*I_neg_key;
     		featureMI.put(key,finalValue);
 
-    		System.out.println(key+"   a_pos="+a_pos+"  b_pos="+b_pos+" c_pos="+c_pos+"  I_pos_key="+I_pos_key +"  a_neg="+a_neg+" b_neg="+b_neg+" c_neg="+c_neg + " I_neg_key="+I_neg_key +" finalValue="+finalValue);
+    		// System.out.println(key+"   a_pos="+a_pos+"  b_pos="+b_pos+" c_pos="+c_pos+"  I_pos_key="+I_pos_key +"  a_neg="+a_neg+" b_neg="+b_neg+" c_neg="+c_neg + " I_neg_key="+I_neg_key +" finalValue="+finalValue);
     	}
     }
 
 
     public static void main(String[] args) throws Exception
 	{
-		GetFeatureByMI obj = new GetFeatureByMI("../corpus/all1/pos","../corpus/all1/neg");
+		GetFeatureByMI obj = new GetFeatureByMI("../corpus/all/pos","../corpus/all/neg");
     	obj.readFileInFolder();
     	obj.posAndFilter();
 
-    	obj.outputArrayList(obj.posDocumentsPOS);
-    	obj.outputArrayList(obj.negDocumentsPOS);
+    	// obj.outputArrayList(obj.posDocumentsPOS);
+    	// obj.outputArrayList(obj.negDocumentsPOS);
 
-    	String[] temp = obj.posDocumentsPOS.get(0).split(" ");
-    	obj.outputArrayList(new ArrayList<String>(Arrays.asList(temp[0].split("/"))));
+    	// String[] temp = obj.posDocumentsPOS.get(0).split(" ");
+    	// obj.outputArrayList(new ArrayList<String>(Arrays.asList(temp[0].split("/"))));
     	System.out.println("---------------------------------------");
 
     	// obj.outputHashMap(obj.posWordOccurTimes);
@@ -194,11 +201,11 @@ public class GetFeatureByMI
     	System.out.println("---------------------------------------");
     	obj.getFeatureByMI();
     	// obj.outputHashMap(obj.featureMI);
-
-
+        obj.outputSortedSort(GetFeatureByMI.sortMiDict(obj.featureMI),30);
+        obj.outputSortedSort(GetFeatureByMI.sortMiDict(obj.featureMI),"./miresult.txt");
 	}
 
-	public void outputArrayList(ArrayList<String> list)
+	private void outputArrayList(ArrayList<String> list)
     {
     	Iterator<String> iter = list.iterator();
     	for(;iter.hasNext();)
@@ -206,13 +213,33 @@ public class GetFeatureByMI
     		System.out.println(iter.next());
     	}
     }
-    public <T> void outputHashMap(HashMap<String,T> map)
+    private <T> void outputHashMap(HashMap<String,T> map)
     {
     	Set<Map.Entry<String,T>> sets=map.entrySet();
     	for(Map.Entry<String,T> m:sets)
     	{
     		System.out.println(m.getKey()+ "  " + m.getValue());
     	}
+    }
+    private <T> void outputSortedSort(LinkedList<Map.Entry<String,T>> list,int outputNums)
+    {
+        int i=0;
+        for(Map.Entry<String,T> map_entry:list)
+        {
+            System.out.println(map_entry.getKey()+"=="+map_entry.getValue());
+            
+            if(++i>outputNums)
+                break;
+        }
+    }
+    private <T> void outputSortedSort(LinkedList<Map.Entry<String,T>> list,String fileName) throws Exception
+    {
+        BufferedWriter bw = new BufferedWriter(new FileWriter(new File(fileName)));
+        for(Map.Entry<String,T> map_entry:list)
+        {
+            bw.write((map_entry.getKey()+"=="+map_entry.getValue()+"\n"));
+        }
+        bw.close();
     }
     private void outputPOSResult(String fileName) throws Exception
     {
@@ -246,6 +273,27 @@ public class GetFeatureByMI
     		bw.write(m.getKey()+ "  " + m.getValue()+"    NEG\n");
     	}
     	bw.close();
+    }
+
+    @SuppressWarnings("unchecked")
+    public static LinkedList<Map.Entry<String,Double>> sortMiDict(HashMap<String,Double> map)
+    {
+        LinkedList<Map.Entry<String,Double>> list = new LinkedList<Map.Entry<String,Double>>(map.entrySet());
+        Collections.sort(list,new Comparator(){
+            @Override
+            public int compare(Object o1,Object o2)
+            {
+                Double value1 = ((Map.Entry<String,Double>)o1).getValue();
+                Double value2 = ((Map.Entry<String,Double>)o2).getValue();
+                if(value1>value2)
+                    return -1;
+                else if(value1<value2)
+                    return 1;
+                else 
+                    return 0;
+            }
+        });
+        return list;
     }
 
 }
