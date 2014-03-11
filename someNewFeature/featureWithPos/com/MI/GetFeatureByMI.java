@@ -1,3 +1,4 @@
+package com.MI;
 import java.io.File;
 import java.io.InputStream;
 import java.io.FileInputStream;
@@ -49,8 +50,8 @@ public class GetFeatureByMI
 			throw new Exception("folder or file in not exist!");
 		}
 
-		CWSTagger cws = new CWSTagger("./models/seg.m");
-		tag = new POSTagger(cws,"models/pos.m");
+		CWSTagger cws = new CWSTagger("./resource/models/seg.m");
+		tag = new POSTagger(cws,"./resource/models/pos.m");
 		tag.SetTagType("en");
 	}
 
@@ -84,7 +85,7 @@ public class GetFeatureByMI
     }
 
 
-    private void putIntoDict(HashMap<String,Integer> map,String item,ArrayList<String> alreadyPutInThisSentence)
+    public void putIntoDict(HashMap<String,Integer> map,String item,ArrayList<String> alreadyPutInThisSentence)
     {
     	if(alreadyPutInThisSentence.contains(item))
     		return;
@@ -196,16 +197,16 @@ public class GetFeatureByMI
     	// obj.outputHashMap(obj.posWordOccurTimes);
     	// obj.outputHashMap(obj.negWordOccurTimes);
 
-    	// obj.outputPOSResult("./posresult.txt");
-    	// obj.outputWordFeature("./feature.txt");
+    	// obj.outputPOSResult("../../tempResult/posresult.txt");
+    	// obj.outputWordFeature("../../tempResult/feature.txt");
     	System.out.println("---------------------------------------");
     	obj.getFeatureByMI();
     	// obj.outputHashMap(obj.featureMI);
         obj.outputSortedSort(GetFeatureByMI.sortMiDict(obj.featureMI),30);
-        obj.outputSortedSort(GetFeatureByMI.sortMiDict(obj.featureMI),"./miresult.txt");
+        obj.outputSortedSort(GetFeatureByMI.sortMiDict(obj.featureMI),"./tempResult/miresult.txt");
 	}
 
-	private void outputArrayList(ArrayList<String> list)
+	public void outputArrayList(ArrayList<String> list)
     {
     	Iterator<String> iter = list.iterator();
     	for(;iter.hasNext();)
@@ -213,7 +214,7 @@ public class GetFeatureByMI
     		System.out.println(iter.next());
     	}
     }
-    private <T> void outputHashMap(HashMap<String,T> map)
+    public <T> void outputHashMap(HashMap<String,T> map)
     {
     	Set<Map.Entry<String,T>> sets=map.entrySet();
     	for(Map.Entry<String,T> m:sets)
@@ -221,7 +222,7 @@ public class GetFeatureByMI
     		System.out.println(m.getKey()+ "  " + m.getValue());
     	}
     }
-    private <T> void outputSortedSort(LinkedList<Map.Entry<String,T>> list,int outputNums)
+    public <T> void outputSortedSort(LinkedList<Map.Entry<String,T>> list,int outputNums)
     {
         int i=0;
         for(Map.Entry<String,T> map_entry:list)
@@ -232,7 +233,7 @@ public class GetFeatureByMI
                 break;
         }
     }
-    private <T> void outputSortedSort(LinkedList<Map.Entry<String,T>> list,String fileName) throws Exception
+    public <T> void outputSortedSort(LinkedList<Map.Entry<String,T>> list,String fileName) throws Exception
     {
         BufferedWriter bw = new BufferedWriter(new FileWriter(new File(fileName)));
         for(Map.Entry<String,T> map_entry:list)
@@ -241,7 +242,7 @@ public class GetFeatureByMI
         }
         bw.close();
     }
-    private void outputPOSResult(String fileName) throws Exception
+    public void outputPOSResult(String fileName) throws Exception
     {
     	BufferedWriter bw = new BufferedWriter(new FileWriter(new File(fileName)));
     	for(String result:posDocumentsPOS)
@@ -256,7 +257,7 @@ public class GetFeatureByMI
     	bw.close();
     }
 
-    private void outputWordFeature(String fileName) throws Exception
+    public void outputWordFeature(String fileName) throws Exception
     {
     	BufferedWriter bw = new BufferedWriter(new FileWriter(new File(fileName)));
     	

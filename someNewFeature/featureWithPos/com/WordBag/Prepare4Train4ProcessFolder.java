@@ -8,16 +8,16 @@ import edu.fudan.ml.types.Dictionary;
 import edu.fudan.nlp.cn.tag.CWSTagger;
 import edu.fudan.nlp.cn.tag.POSTagger;
 
-public class Prepare4Train
+public class Prepare4Train4ProcessFolder
 {
 	public ProcessFolder processFolderObj;
 	public ArrayList<ArrayList<Integer>> posRepresentVector = new ArrayList<ArrayList<Integer>>();
 	public ArrayList<ArrayList<Integer>> negRepresentVector = new ArrayList<ArrayList<Integer>>();
 	public ArrayList<String> wordSets;
 
-	public Prepare4Train(){}
+	public Prepare4Train4ProcessFolder(){}
 
-	public Prepare4Train(ProcessFolder obj)
+	public Prepare4Train4ProcessFolder(ProcessFolder obj)
 	{
 		this.processFolderObj = obj;
 	}
@@ -72,14 +72,14 @@ public class Prepare4Train
 
 	public static void main(String[] args) throws Exception
 	{
-    	Prepare4Train prepare4TrainObj = new Prepare4Train();
-    	prepare4TrainObj.readObj(new File("./processFolder.ser"));
-    	System.out.println(prepare4TrainObj.processFolderObj.posDocumentsPOS.size());
-    	System.out.println(prepare4TrainObj.processFolderObj.negDocumentsPOS.size());
-		prepare4TrainObj.initialize();
-    	System.out.println(prepare4TrainObj.posRepresentVector.size());
-    	System.out.println(prepare4TrainObj.posRepresentVector.get(1).size());
-    	System.out.println(prepare4TrainObj.negRepresentVector.size());
-    	System.out.println(prepare4TrainObj.negRepresentVector.get(1).size());			
+    	Prepare4Train4ProcessFolder prepare4Train4ProcessFolderObj = new Prepare4Train4ProcessFolder();
+    	prepare4Train4ProcessFolderObj.readObj(new File("./processFolder.ser"));
+    	System.out.println(prepare4Train4ProcessFolderObj.processFolderObj.posDocumentsPOS.size());
+    	System.out.println(prepare4Train4ProcessFolderObj.processFolderObj.negDocumentsPOS.size());
+		prepare4Train4ProcessFolderObj.initialize();
+    	System.out.println(prepare4Train4ProcessFolderObj.posRepresentVector.size());
+    	System.out.println(prepare4Train4ProcessFolderObj.posRepresentVector.get(1).size());
+    	System.out.println(prepare4Train4ProcessFolderObj.negRepresentVector.size());
+    	System.out.println(prepare4Train4ProcessFolderObj.negRepresentVector.get(1).size());			
 	}
 }
