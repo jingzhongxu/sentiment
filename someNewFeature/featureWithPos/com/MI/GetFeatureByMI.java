@@ -85,7 +85,7 @@ public class GetFeatureByMI
     }
 
 
-    public void putIntoDict(HashMap<String,Integer> map,String item,ArrayList<String> alreadyPutInThisSentence)
+    private void putIntoDict(HashMap<String,Integer> map,String item,ArrayList<String> alreadyPutInThisSentence)
     {
     	if(alreadyPutInThisSentence.contains(item))
     		return;
