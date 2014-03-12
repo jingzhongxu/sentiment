@@ -115,7 +115,7 @@ public class Prepare4TrainMI
 	{
 		Prepare4TrainMI prepare4TrainMIObj = new Prepare4TrainMI("../corpus/all/pos","../corpus/all/neg");
 		// prepare4TrainMIObj.getFeatureByMIObj.outputSortedSort(GetFeatureByMI.sortMiDict(prepare4TrainMIObj.getFeatureByMIObj.featureMI),30);
-		prepare4TrainMIObj.setFinalFeature((int)(prepare4TrainMIObj.getFeatureByMIObj.featureMI.size()*0.5));
+		prepare4TrainMIObj.setFinalFeature((int)(prepare4TrainMIObj.getFeatureByMIObj.featureMI.size()*0.8));
 		prepare4TrainMIObj.getRepreset(200);
 
 		System.out.println(prepare4TrainMIObj.posTrainRepresent.size());
@@ -125,12 +125,15 @@ public class Prepare4TrainMI
 		System.out.println(prepare4TrainMIObj.posTrainRepresent.get(0).size());
 		System.out.println(prepare4TrainMIObj.negTrainRepresent.get(0).size());
 
-		Prepare4TrainMI.outputAsTrainFormat(prepare4TrainMIObj.posTrainRepresent,prepare4TrainMIObj.negTrainRepresent,"./tempResult/trainFormat.out");
-		Prepare4TrainMI.outputAsTrainFormat(prepare4TrainMIObj.posTestRepresent,prepare4TrainMIObj.negTestRepresent,"./tempResult/testFormat.out");
+		Prepare4TrainMI.outputFormatFile4Logistic(prepare4TrainMIObj.posTrainRepresent,prepare4TrainMIObj.negTrainRepresent,"./tempResult/trainFormat.out");
+		Prepare4TrainMI.outputFormatFile4Logistic(prepare4TrainMIObj.posTestRepresent,prepare4TrainMIObj.negTestRepresent,"./tempResult/testFormat.out");
 		Prepare4TrainMI.outputConfigFile("./tempResult/properties.out",300,prepare4TrainMIObj.finalFeature.size(),0.01,prepare4TrainMIObj.posTrainRepresent.size(),prepare4TrainMIObj.negTrainRepresent.size());
+		Prepare4TrainMI.outputFile4Libsvm(prepare4TrainMIObj.posTrainRepresent,prepare4TrainMIObj.negTrainRepresent,"./tempResult/svmfile/trainFormat.out");
+		Prepare4TrainMI.outputFile4Libsvm(prepare4TrainMIObj.posTestRepresent,prepare4TrainMIObj.negTestRepresent,"./tempResult/svmfile/testFormat.out");
+
 	}
 
-	public static <T extends Number> void outputAsTrainFormat(ArrayList<ArrayList<T>> poslist,ArrayList<ArrayList<T>> neglist,String fileName) throws Exception
+	public static <T extends Number> void outputFormatFile4Logistic(ArrayList<ArrayList<T>> poslist,ArrayList<ArrayList<T>> neglist,String fileName) throws Exception
 	{
 		BufferedWriter bw = new BufferedWriter(new FileWriter(new File(fileName)));
 		for(ArrayList<T> listItem:poslist)
@@ -164,5 +167,30 @@ public class Prepare4TrainMI
 		bw.write("negSampleNums=" + negSampleNums + "\n");
 		bw.close();
 	}
+
+	public static <T extends Number> void outputFile4Libsvm(ArrayList<ArrayList<T>> poslist,ArrayList<ArrayList<T>> neglist,String fileName) throws Exception
+	{
+		BufferedWriter bw = new BufferedWriter(new FileWriter(new File(fileName)));
+		for(ArrayList<T> listItem:poslist)
+		{
+			bw.write("+1 ");
+			for(int i=0;i<listItem.size();i++)
+			{
+				bw.write(String.valueOf(i+1) + ":" + listItem.get(i) + " ");
+			}
+			bw.write("\n");
+		}
+		for(ArrayList<T> listItem:neglist)
+		{
+			bw.write("-1 ");
+			for(int i=0;i<listItem.size();i++)
+			{
+				bw.write(String.valueOf(i+1) + ":" + listItem.get(i) + " ");
+			}
+			bw.write("\n");
+		}
+		bw.close();
+	}
+
 
 }
