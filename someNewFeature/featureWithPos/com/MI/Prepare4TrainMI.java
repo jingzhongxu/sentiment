@@ -12,8 +12,11 @@ public class Prepare4TrainMI
 {
 	public GetFeatureByMI getFeatureByMIObj;
 	public ArrayList<String> finalFeature;  
-	public ArrayList<ArrayList<Integer>> posRepresent = new ArrayList<ArrayList<Integer>>();
-	public ArrayList<ArrayList<Integer>> negRepresent = new ArrayList<ArrayList<Integer>>();
+	public ArrayList<ArrayList<Integer>> posTrainRepresent = new ArrayList<ArrayList<Integer>>();
+	public ArrayList<ArrayList<Integer>> negTrainRepresent = new ArrayList<ArrayList<Integer>>();
+	public ArrayList<ArrayList<Integer>> posTestRepresent = new ArrayList<ArrayList<Integer>>();
+	public ArrayList<ArrayList<Integer>> negTestRepresent = new ArrayList<ArrayList<Integer>>();
+
  
 	public Prepare4TrainMI(String posFoldName,String negFoleName) throws Exception
 	{
@@ -49,7 +52,10 @@ public class Prepare4TrainMI
 		}	
 	} 
 
-	public void getRepresetnt() throws Exception
+	/*
+		testNums make divide corpuse set into train and test
+	*/
+	public void getRepreset(int testNums) throws Exception
 	{
 		if(finalFeature==null)
 		{
@@ -78,7 +84,10 @@ public class Prepare4TrainMI
 					itemRepresent.set(index,1);
 				}
 			}
-			posRepresent.add(itemRepresent);
+			if(i<testNums)
+				posTestRepresent.add(itemRepresent);
+			else
+			 	posTrainRepresent.add(itemRepresent);
 		}
 		for(int i=0;i<getFeatureByMIObj.negDocumentsPOS.size();i++)
 		{
@@ -94,7 +103,10 @@ public class Prepare4TrainMI
 					itemRepresent.set(index,1);
 				}
 			}
-			negRepresent.add(itemRepresent);
+			if(i<testNums)
+				negTestRepresent.add(itemRepresent);
+			else
+				negTrainRepresent.add(itemRepresent);
 		}
 	}
 
@@ -103,15 +115,19 @@ public class Prepare4TrainMI
 	{
 		Prepare4TrainMI prepare4TrainMIObj = new Prepare4TrainMI("../corpus/all/pos","../corpus/all/neg");
 		// prepare4TrainMIObj.getFeatureByMIObj.outputSortedSort(GetFeatureByMI.sortMiDict(prepare4TrainMIObj.getFeatureByMIObj.featureMI),30);
-		prepare4TrainMIObj.setFinalFeature((int)(prepare4TrainMIObj.getFeatureByMIObj.featureMI.size() * 0.75));
-		prepare4TrainMIObj.getRepresetnt();
+		prepare4TrainMIObj.setFinalFeature((int)(prepare4TrainMIObj.getFeatureByMIObj.featureMI.size()*0.5));
+		prepare4TrainMIObj.getRepreset(200);
 
-		System.out.println(prepare4TrainMIObj.posRepresent.size());
-		System.out.println(prepare4TrainMIObj.negRepresent.size());
-		System.out.println(prepare4TrainMIObj.posRepresent.get(0).size());
-		System.out.println(prepare4TrainMIObj.negRepresent.get(0).size());
+		System.out.println(prepare4TrainMIObj.posTrainRepresent.size());
+		System.out.println(prepare4TrainMIObj.negTrainRepresent.size());
+		System.out.println(prepare4TrainMIObj.posTestRepresent.size());
+		System.out.println(prepare4TrainMIObj.negTestRepresent.size());
+		System.out.println(prepare4TrainMIObj.posTrainRepresent.get(0).size());
+		System.out.println(prepare4TrainMIObj.negTrainRepresent.get(0).size());
 
-		Prepare4TrainMI.outputAsTrainFormat(prepare4TrainMIObj.posRepresent,prepare4TrainMIObj.negRepresent,"./tempResult/trainFormat.out");
+		Prepare4TrainMI.outputAsTrainFormat(prepare4TrainMIObj.posTrainRepresent,prepare4TrainMIObj.negTrainRepresent,"./tempResult/trainFormat.out");
+		Prepare4TrainMI.outputAsTrainFormat(prepare4TrainMIObj.posTestRepresent,prepare4TrainMIObj.negTestRepresent,"./tempResult/testFormat.out");
+		Prepare4TrainMI.outputConfigFile("./tempResult/properties.out",300,prepare4TrainMIObj.finalFeature.size(),0.01,prepare4TrainMIObj.posTrainRepresent.size(),prepare4TrainMIObj.negTrainRepresent.size());
 	}
 
 	public static <T extends Number> void outputAsTrainFormat(ArrayList<ArrayList<T>> poslist,ArrayList<ArrayList<T>> neglist,String fileName) throws Exception
@@ -137,4 +153,16 @@ public class Prepare4TrainMI
 		}
 		bw.close();
 	}
+
+	public static void outputConfigFile(String fileName,int iteratorTime,int dimensions,double alpha,int posSampleNums,int negSampleNums) throws Exception
+	{
+		BufferedWriter bw = new BufferedWriter(new FileWriter(new File(fileName)));
+		bw.write("iteratorTime=" + iteratorTime + "\n");
+		bw.write("dimensions=" + dimensions + "\n");
+		bw.write("alpha=" + alpha + "\n");
+		bw.write("posSampleNums=" + posSampleNums + "\n");
+		bw.write("negSampleNums=" + negSampleNums + "\n");
+		bw.close();
+	}
+
 }

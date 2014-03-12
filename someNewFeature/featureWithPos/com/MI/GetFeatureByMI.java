@@ -203,7 +203,7 @@ public class GetFeatureByMI
     	obj.getFeatureByMI();
     	// obj.outputHashMap(obj.featureMI);
         obj.outputSortedSort(GetFeatureByMI.sortMiDict(obj.featureMI),30);
-        obj.outputSortedSort(GetFeatureByMI.sortMiDict(obj.featureMI),"./tempResult/miresult.txt");
+        obj.outputSortedSort(GetFeatureByMI.sortMiDict(obj.featureMI),"./tempResult/miResult.txt");
 	}
 
 	public void outputArrayList(ArrayList<String> list)

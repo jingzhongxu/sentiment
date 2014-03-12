@@ -245,7 +245,7 @@ public class Logistic
 		for(ArrayList<Integer> samples:posTestSamples)
 		{
 			double finalValue = computeFunctionH(samples,parameters);
-			if(finalValue>0.5)
+			if(finalValue > 0.5)
 				posResult.add(true);
 			else
 				posResult.add(false);
@@ -253,7 +253,7 @@ public class Logistic
 		for(ArrayList<Integer> samples:negTestSamples)
 		{
 			double finalValue = computeFunctionH(samples,parameters);
-			if(finalValue<0.5)
+			if(finalValue < 0.5)
 				negResult.add(true);
 			else
 				negResult.add(false);
@@ -261,10 +261,14 @@ public class Logistic
 
 		System.out.println("The test result is:");
 		double[] accuracy = computeAccuracy(posResult,negResult);
+		double posRecall = computeRecall(posResult);
+		double negRecall = computeRecall(negResult);
 		System.out.println("pos accuracy = " + accuracy[0]);
 		System.out.println("neg accuracy = " + accuracy[1]);
-		System.out.println("pos recall = " + computeRecall(posResult));
-		System.out.println("neg recall = " + computeRecall(negResult));
+		System.out.println("pos recall = " + posRecall);
+		System.out.println("neg recall = " + negRecall);
+		System.out.println("pos f-score =" + computeFScore(accuracy[0],posRecall));
+		System.out.println("neg f-score =" + computeFScore(accuracy[1],negRecall));
 	}
 
 	private double[] computeAccuracy(ArrayList<Boolean> posList,ArrayList<Boolean> negList)
@@ -281,10 +285,16 @@ public class Logistic
 		accuracy[1] = negAccuracy;
 		return accuracy;
 	}
+	
 	private double computeRecall(ArrayList<Boolean> list)
 	{
 		int times = Collections.frequency(list,true);
 		return (double)times/list.size();
+	}
+
+	private double computeFScore(double accuracy,double recall)
+	{
+		return (2*accuracy*recall/(accuracy+recall));
 	}
 
 	public static void main(String[] args) throws Exception
@@ -305,7 +315,7 @@ public class Logistic
 
 		logistic.trainingModel();
 
-		logistic.test("./tempResult/trainFormat.out");
+		logistic.test("./tempResult/testFormat.out");
 	}
 
 	private static void outputList(ArrayList<Integer> list)

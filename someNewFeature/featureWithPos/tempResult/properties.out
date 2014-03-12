@@ -1,6 +1,5 @@
-iteratorTime=200
-dimensions=10000
+iteratorTime=300
+dimensions=6504
 alpha=0.01
-posSampleNums=2000
-negSampleNums=2000
-
+posSampleNums=1799
+negSampleNums=1798
