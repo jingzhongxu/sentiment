@@ -238,6 +238,9 @@ public class Logistic
 				throw new Exception("somgthing wrong!!! flag==0");
 		}
 		br.close();
+		System.out.println("posTestSamples.size()=" + posTestSamples.size());
+		System.out.println("negTestSamples.size()=" + negTestSamples.size());
+
 
 		ArrayList<Boolean> posResult = new ArrayList<Boolean>();
 		ArrayList<Boolean> negResult = new ArrayList<Boolean>();
@@ -245,7 +248,7 @@ public class Logistic
 		for(ArrayList<Integer> samples:posTestSamples)
 		{
 			double finalValue = computeFunctionH(samples,parameters);
-			if(finalValue > 0.5)
+			if(finalValue >=0.5)
 				posResult.add(true);
 			else
 				posResult.add(false);
@@ -253,7 +256,7 @@ public class Logistic
 		for(ArrayList<Integer> samples:negTestSamples)
 		{
 			double finalValue = computeFunctionH(samples,parameters);
-			if(finalValue < 0.5)
+			if(finalValue <=0.5)
 				negResult.add(true);
 			else
 				negResult.add(false);
@@ -263,12 +266,14 @@ public class Logistic
 		double[] accuracy = computeAccuracy(posResult,negResult);
 		double posRecall = computeRecall(posResult);
 		double negRecall = computeRecall(negResult);
-		System.out.println("pos accuracy = " + accuracy[0]);
-		System.out.println("neg accuracy = " + accuracy[1]);
-		System.out.println("pos recall = " + posRecall);
-		System.out.println("neg recall = " + negRecall);
-		System.out.println("pos f-score =" + computeFScore(accuracy[0],posRecall));
-		System.out.println("neg f-score =" + computeFScore(accuracy[1],negRecall));
+		// System.out.println("posAccuracy = " + accuracy[0]);
+		// System.out.println("neg accuracy = " + accuracy[1]);
+		// System.out.println("pos recall = " + posRecall);
+		// System.out.println("neg recall = " + negRecall);
+		// System.out.println("pos f-score =" + computeFScore(accuracy[0],posRecall));
+		// System.out.println("neg f-score =" + computeFScore(accuracy[1],negRecall));
+		System.out.println("posAccuracy=" + accuracy[0] + ",posRecall=" + posRecall + ",posFscore=" + computeFScore(accuracy[0],posRecall));
+		System.out.println("negAccuracy=" + accuracy[1] + ",negRecall=" + negRecall + ",negFscore=" + computeFScore(accuracy[1],negRecall));
 	}
 
 	private double[] computeAccuracy(ArrayList<Boolean> posList,ArrayList<Boolean> negList)
@@ -300,11 +305,11 @@ public class Logistic
 	public static void main(String[] args) throws Exception
 	{
 		Logistic logistic = new Logistic("./tempResult/properties.out");
-		System.out.println(logistic.dimensions);
-		System.out.println(logistic.iteratorTime);
-		System.out.println(logistic.alpha);
-		System.out.println(logistic.posSampleNums);
-		System.out.println(logistic.negSampleNums);
+		System.out.println("dimensions="+logistic.dimensions);
+		System.out.println("iteratorTime="+logistic.iteratorTime);
+		System.out.println("alpha="+logistic.alpha);
+		System.out.println("logistic.posSampleNums="+logistic.posSampleNums);
+		System.out.println("logistic.negSampleNums="+logistic.negSampleNums);
 		System.out.println("----------------------------------");
 
 		logistic.initialize("./tempResult/trainFormat.out");
@@ -314,6 +319,7 @@ public class Logistic
 		// Logistic.outputList(logistic.posTrainSamples.get(0));
 
 		logistic.trainingModel();
+		System.out.println("0 nums in para="+Collections.frequency(logistic.parameters,0.0));
 
 		logistic.test("./tempResult/testFormat.out");
 	}

@@ -1,5 +1,5 @@
 iteratorTime=300
-dimensions=10407
+dimensions=7805
 alpha=0.01
 posSampleNums=1799
 negSampleNums=1798
