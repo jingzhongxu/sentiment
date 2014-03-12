@@ -17,8 +17,11 @@ public class Logistic
 	public int posSampleNums;
 	public int negSampleNums;
 	public double alpha;
-	public ArrayList<ArrayList<Integer>> posSamples;
-	public ArrayList<ArrayList<Integer>> negSamples;
+	public ArrayList<ArrayList<Integer>> posTrainSamples;
+	public ArrayList<ArrayList<Integer>> negTrainSamples;
+	public ArrayList<ArrayList<Integer>> posTestSamples;
+	public ArrayList<ArrayList<Integer>> negTestSamples;
+
 	public ArrayList<Double> parameters;
 
 	public Logistic(String configFileName) throws Exception
@@ -59,8 +62,8 @@ public class Logistic
 
 	public void initialize(String formatFileName) throws Exception
 	{
-		posSamples = new ArrayList<ArrayList<Integer>>();
-		negSamples = new ArrayList<ArrayList<Integer>>();
+		posTrainSamples = new ArrayList<ArrayList<Integer>>();
+		negTrainSamples = new ArrayList<ArrayList<Integer>>();
 		
 		ArrayList<Integer> constructs = new ArrayList<Integer>(dimensions);
 		for(int i=0;i<dimensions;i++)
@@ -97,33 +100,43 @@ public class Logistic
 				}
 				catch(IndexOutOfBoundsException e)
 				{
-					t`hrow new Exception("input dimension less than real dimensions");
+					throw new Exception("input dimension less than real dimensions");
 				}
 			}
 			if(flag==1)
-				posSamples.add(featureItem);	
+				posTrainSamples.add(featureItem);	
 			else if(flag==-1)
-				negSamples.add(featureItem);
+				negTrainSamples.add(featureItem);
 			else
 				throw new Exception("somgthing wrong!!! flag==0");
 		}
 		br.close();
 	}
 
-	public void trainingModel()
+	public void trainingModel() throws Exception
 	{
+		if(posTrainSamples==null)
+		{
+			throw new Exception("initialize must before training!");
+		}
+
 		if(iteratorTime<50)
 			iteratorTime=50;
-		
+		System.out.println("iteratorTime = "+ iteratorTime);
+
+
 		parameters = new ArrayList<Double>(dimensions);
 		for(int i=0;i<dimensions;i++)
 		{
-			parameters.add(0);
+			parameters.add(0.0);
 		}
 
 		for(int times=1;times<iteratorTime;times++)
 		{
-			for(ArrayList<Integer> samples:posSamples)
+			if(times%10==0)
+				System.out.println("training.... the "+ times+" iterator. Need "+iteratorTime);
+
+			for(ArrayList<Integer> samples:posTrainSamples)
 			{
 				double y_i = 1;
 				double h_function_x_i=computeFunctionH(samples,parameters);
@@ -131,14 +144,14 @@ public class Logistic
 				{
 					double x_i_j = samples.get(j);
 					if(x_i_j==0)
-						return;
+						continue;
 					double theta = parameters.get(j);
 					theta += alpha * (y_i - h_function_x_i)*x_i_j;
 					parameters.set(j,theta);
 				}
 			}
 
-			for(ArrayList<Integer> samples:negSamples)
+			for(ArrayList<Integer> samples:negTrainSamples)
 			{
 				double y_i = 0;
 				double h_function_x_i=computeFunctionH(samples,parameters);
@@ -146,14 +159,13 @@ public class Logistic
 				{
 					double x_i_j = samples.get(j);
 					if(x_i_j==0)
-						return;
+						continue;
 					double theta = parameters.get(j);
 					theta += alpha * (y_i - h_function_x_i)*x_i_j;
 					parameters.set(j,theta);
 				}
 			}
 		}
-
 	}
 
 	/******************************** compute   H function  **************************************/
@@ -170,7 +182,110 @@ public class Logistic
 	}
 
 
+	public void test(String testFormatFileName) throws Exception
+	{
+		if(parameters==null)
+		{
+			throw new Exception("training must before test!");
+		}
 
+		posTestSamples = new ArrayList<ArrayList<Integer>>();
+		negTestSamples = new ArrayList<ArrayList<Integer>>();
+		
+		ArrayList<Integer> constructs = new ArrayList<Integer>(dimensions);
+		for(int i=0;i<dimensions;i++)
+			constructs.add(0);
+
+		BufferedReader br = new BufferedReader(new FileReader(new File(testFormatFileName)));
+		String line = "";
+		while((line=br.readLine())!=null)
+		{
+			ArrayList<Integer> featureItem = new ArrayList<Integer>(constructs);
+			String[] elements = line.split(" ");
+			int flag = 0;
+			for(int i=0; i<elements.length; i++)
+			{
+				try
+				{
+					 if(i!=0)
+					{
+						featureItem.set(i-1,Integer.valueOf(elements[i]));
+						// if(Integer.valueOf(elements[i])==1)
+						// 	System.out.println("ddd");
+					}
+					else
+					{
+						if(elements[i].matches("\\+1.*"))
+						{
+							flag = 1;
+						}
+						else if(elements[i].matches("-1.*"))
+						{
+							flag =-1;
+						}
+					}
+				}
+				catch(IndexOutOfBoundsException e)
+				{
+					throw new Exception("input dimension less than real dimensions");
+				}
+			}
+			if(flag==1)
+				posTestSamples.add(featureItem);	
+			else if(flag==-1)
+				negTestSamples.add(featureItem);
+			else
+				throw new Exception("somgthing wrong!!! flag==0");
+		}
+		br.close();
+
+		ArrayList<Boolean> posResult = new ArrayList<Boolean>();
+		ArrayList<Boolean> negResult = new ArrayList<Boolean>();
+
+		for(ArrayList<Integer> samples:posTestSamples)
+		{
+			double finalValue = computeFunctionH(samples,parameters);
+			if(finalValue>0.5)
+				posResult.add(true);
+			else
+				posResult.add(false);
+		}
+		for(ArrayList<Integer> samples:negTestSamples)
+		{
+			double finalValue = computeFunctionH(samples,parameters);
+			if(finalValue<0.5)
+				negResult.add(true);
+			else
+				negResult.add(false);
+		}
+
+		System.out.println("The test result is:");
+		double[] accuracy = computeAccuracy(posResult,negResult);
+		System.out.println("pos accuracy = " + accuracy[0]);
+		System.out.println("neg accuracy = " + accuracy[1]);
+		System.out.println("pos recall = " + computeRecall(posResult));
+		System.out.println("neg recall = " + computeRecall(negResult));
+	}
+
+	private double[] computeAccuracy(ArrayList<Boolean> posList,ArrayList<Boolean> negList)
+	{
+		double [] accuracy = new double[2];
+		int postrue = Collections.frequency(posList,true);
+		int posFlase = posList.size()-postrue;
+		int negtrue = Collections.frequency(negList,true);
+		int negfalse = negList.size()-negtrue;
+
+		double posAccuracy = (double)postrue/(postrue+negfalse);
+		double negAccuracy = (double)negtrue/(negtrue+posFlase);
+		accuracy[0] = posAccuracy;
+		accuracy[1] = negAccuracy;
+		return accuracy;
+	}
+	private double computeRecall(ArrayList<Boolean> list)
+	{
+		int times = Collections.frequency(list,true);
+		return (double)times/list.size();
+	}
 
 	public static void main(String[] args) throws Exception
 	{
@@ -183,11 +298,14 @@ public class Logistic
 		System.out.println("----------------------------------");
 
 		logistic.initialize("./tempResult/trainFormat.out");
-		System.out.println(logistic.posSamples.size());
-		System.out.println(logistic.negSamples.size());
-		System.out.println(Collections.frequency(logistic.posSamples.get(0),1));
-		// Logistic.outputList(logistic.posSamples.get(0));
+		System.out.println(logistic.posTrainSamples.size());
+		System.out.println(logistic.negTrainSamples.size());
+		// System.out.println(Collections.frequency(logistic.posTrainSamples.get(0),1));
+		// Logistic.outputList(logistic.posTrainSamples.get(0));
 
+		logistic.trainingModel();
+
+		logistic.test("./tempResult/trainFormat.out");
 	}
 
 	private static void outputList(ArrayList<Integer> list)
@@ -199,5 +317,3 @@ public class Logistic
 		System.out.println();
 	}
 }
-
-
