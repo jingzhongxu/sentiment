@@ -27,6 +27,7 @@ public class MaximumEntropy
 	public ArrayList<Double> p_xy_pos_vector;
 	public ArrayList<Double> p_xy_neg_vector;
 	public double p_xy;
+	public ArrayList<Double> parameters;
 	
 	public MaximumEntropy(String configNames) throws Exception
 	{
@@ -121,6 +122,10 @@ public class MaximumEntropy
 				throw new Exception("somgthing wrong!!! flag==0");
 		}
 		br.close();
+
+		parameters = new ArrayList<Double>(dimensions);
+		for(int i=0;i<dimensions;i++)
+			parameters.add(0.0);
 	}
 
 	public void trainingModel()
@@ -135,10 +140,15 @@ public class MaximumEntropy
 			p_x = 1/(posSampleNums+negSampleNums);
 			return;
 		}
+
+		p_x_pos_vector = new ArrayList<Double>(posSampleNums);
+		p_x_neg_vector = new ArrayList<Double>(negSampleNums);
+
+
 		for(int j=0;j<posSampleNums;j++)
 		{
 			int nums = 0;
-			ArrayList<Integer> x = posSampleNums.get(j);
+			ArrayList<Integer> x = posTrainSamples.get(j);
 			for(ArrayList<Integer> temp:posTrainSamples)
 			{
 				if(isSame(x,temp))
@@ -149,7 +159,7 @@ public class MaximumEntropy
 				if(isSame(x,temp))
 					nums++;
 			}
-			p_x_pos_vector.set(j,nums/posSampleNums);		
+			p_x_pos_vector.add((double)nums/posSampleNums);		
 		}
 		for(int j=0;j<negSampleNums;j++)
 		{
@@ -165,13 +175,13 @@ public class MaximumEntropy
 				if(isSame(x,temp))
 					nums++;
 			}
-			p_x_neg_vector.set(j,nums/negSampleNums);		
+			p_x_neg_vector.add((double)nums/negSampleNums);		
 		}
 	}
 	private boolean isSame(ArrayList<Integer> list1,ArrayList<Integer>list2)
 	{
 		boolean flag = true;
-		for(int i=0;i<list1.dimensions;i++)
+		for(int i=0;i<dimensions;i++)
 		{
 			if(list1.get(i)==list2.get(i))
 				continue;
@@ -190,6 +200,14 @@ public class MaximumEntropy
 			p_xy = 1/(posSampleNums+negSampleNums);
 			return;
 		}
+
+		p_xy_pos_vector = new ArrayList<Double>(posSampleNums);
+		p_xy_neg_vector = new ArrayList<Double>(negSampleNums);
+		// for(int i=0;i<posSampleNums;i++)
+		// 	p_xy_pos_vector.add(0.0);
+		// for(int i=0;i<negSampleNums;i++)
+		// 	p_xy_neg_vector.add(0.0);
+
 		for(int j=0;j<posSampleNums;j++)
 		{
 			int nums = 0;
@@ -199,7 +217,7 @@ public class MaximumEntropy
 				if(isSame(x,temp))
 					nums++;
 			}
-			p_xy_pos_vector .set(j,nums/posSampleNums);		
+			p_xy_pos_vector.add((double)nums/posSampleNums);		
 		}
 		for(int j=0;j<negSampleNums;j++)
 		{
@@ -210,7 +228,7 @@ public class MaximumEntropy
 				if(isSame(x,temp))
 					nums++;
 			}
-			p_xy_neg_vector.set(j,nums/posSampleNums);		
+			p_xy_neg_vector.add((double)nums/posSampleNums);		
 		}
 	}
 
@@ -232,6 +250,16 @@ public class MaximumEntropy
 		maximumEntropy.initialize("./tempResult/trainFormat.out");
 		System.out.println(maximumEntropy.posTrainSamples.size());
 		System.out.println(maximumEntropy.negTrainSamples.size());
+
+		System.out.println("maximumEntropy computeP_X......");
+		maximumEntropy.computeP_X(true);
+		System.out.println(maximumEntropy.p_x_neg_vector.size());
+		System.out.println("random test:" + maximumEntropy.p_x_pos_vector.get(0));
+
+		System.out.println("maximumEntropy computeP_XY......");
+		maximumEntropy.computeP_XY(true);
+		System.out.println(maximumEntropy.p_xy_neg_vector.size());
+		System.out.println("random test:"+ maximumEntropy.p_xy_pos_vector.get(1));
 	}
 
 
