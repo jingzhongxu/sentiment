@@ -19,7 +19,6 @@ public class MaximumEntropy
 	public ArrayList<ArrayList<Integer>> posTrainSamples;
 	public ArrayList<ArrayList<Integer>> negTrainSamples;
 
-	public ArrayList<Integer> parameters;
 
 	public ArrayList<Double> p_x_pos_vector;
 	public ArrayList<Double> p_x_neg_vector;
@@ -27,8 +26,12 @@ public class MaximumEntropy
 	public ArrayList<Double> p_xy_pos_vector;
 	public ArrayList<Double> p_xy_neg_vector;
 	public double p_xy;
-	public ArrayList<Double> parameters;
+	public ArrayList<Double> parameters;// 它的维度是实际的2倍，因为我们要训练在不同的class label下的相关参数
+	public ArrayList<Double> expectPXY_f;/*这是我feature的期望，就是我训练的时候需要去让我的p(x)p(y|x)f(x,y)=p(x,y)f(x,y)这个等式的右边*/
+	public int C;    //这是我模型迭代的时候用的参数，类似学习率的东西
 	
+
+
 	public MaximumEntropy(String configNames) throws Exception
 	{
 		Properties properties = new Properties();
@@ -203,10 +206,6 @@ public class MaximumEntropy
 
 		p_xy_pos_vector = new ArrayList<Double>(posSampleNums);
 		p_xy_neg_vector = new ArrayList<Double>(negSampleNums);
-		// for(int i=0;i<posSampleNums;i++)
-		// 	p_xy_pos_vector.add(0.0);
-		// for(int i=0;i<negSampleNums;i++)
-		// 	p_xy_neg_vector.add(0.0);
 
 		for(int j=0;j<posSampleNums;j++)
 		{
@@ -232,9 +231,52 @@ public class MaximumEntropy
 		}
 	}
 
+	private void computeEpx(boolean flag)
+	{
+		if(p_x==0.0 && p_x_pos_vector==null)
+			computeP_X(flag);
+		if(p_xy==0.0 && p_xy_pos_vector==null)
+			computeP_XY(flag);
 
 
 
+
+	}
+
+
+
+
+	private void computeC()
+	{
+		int[] array = new int[dimensions];
+		int max =0;
+		
+		for(ArrayList<Integer> list :posTrainSamples)
+		{
+			for(int i=0;i<dimensions;i++)
+			{
+				array[i]+=list.get(i);
+			}
+		}
+		for(ArrayList<Integer> list:negTrainSamples)
+		{
+			for(int i=0;i<dimensions;i++)
+			{
+				array[i]+=list.get(i);
+			}
+		}
+
+		for(int j=0;j<dimensions;j++)
+		{
+			if(array[j]<max)
+				continue;
+			else
+			{
+				max=array[j];
+			}
+		}
+		C=max;
+	}
 
 
 
@@ -250,6 +292,10 @@ public class MaximumEntropy
 		maximumEntropy.initialize("./tempResult/trainFormat.out");
 		System.out.println(maximumEntropy.posTrainSamples.size());
 		System.out.println(maximumEntropy.negTrainSamples.size());
+
+		System.out.println("compute C.....");
+		maximumEntropy.computeC();
+		System.out.println(maximumEntropy.C);
 
 		System.out.println("maximumEntropy computeP_X......");
 		maximumEntropy.computeP_X(true);
