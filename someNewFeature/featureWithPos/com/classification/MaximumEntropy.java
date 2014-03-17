@@ -21,9 +21,11 @@ public class MaximumEntropy
 
 	public ArrayList<Integer> parameters;
 
-	public ArrayList<Double> p_x_vector;
+	public ArrayList<Double> p_x_pos_vector;
+	public ArrayList<Double> p_x_neg_vector;
 	public double p_x;
-	public ArrayList<Double> p_xy_vector;
+	public ArrayList<Double> p_xy_pos_vector;
+	public ArrayList<Double> p_xy_neg_vector;
 	public double p_xy;
 	
 	public MaximumEntropy(String configNames) throws Exception
@@ -133,8 +135,41 @@ public class MaximumEntropy
 			p_x = 1/(posSampleNums+negSampleNums);
 			return;
 		}
+		for(int j=0;j<posSampleNums.size();j++)
+		{
+			int nums = 0;
+			ArrayList<Integer> x = posSampleNums.get(j);
+			for(ArrayList<Integer> temp:posTrainSamples)
+			{
+				if(isSame(x,temp))
+					nums++;
+			}
+			for(ArrayList<Integer> temp: negTrainSamples)
+			{
+				if(isSame(x,temp))
+					nums++;
+			}
+			p_x_pos_vector.set(j,nums/posSampleNums);		
+		}
+
+		
 
 
+	}
+	private boolean isSame(ArrayList<Integer> list1,ArrayList<Integer>list2)
+	{
+		boolean flag = true;
+		for(int i=0;i<list1.dimensions;i++)
+		{
+			if(list1.get(i)==list2.get(i))
+				continue;
+			else
+			{
+				flag = false;
+				return flag;
+			}	
+		}
+		return flag;
 	}
 	private void computeP_XY(boolean onOff)
 	{
