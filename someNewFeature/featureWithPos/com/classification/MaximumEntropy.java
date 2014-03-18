@@ -2,6 +2,7 @@ package com.classification;
 
 import java.util.ArrayList;
 import java.util.Properties;
+import java.util.Collections;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,9 +28,9 @@ public class MaximumEntropy
 	public ArrayList<Double> p_xy_neg_vector;
 	public double p_xy;
 	public ArrayList<Double> parameters;// 它的维度是实际的2倍，因为我们要训练在不同的class label下的相关参数
-	public ArrayList<Double> expectPXY_f;/*这是我feature的期望，就是我训练的时候需要去让我的p(x)p(y|x)f(x,y)=p(x,y)f(x,y)这个等式的右边*/
+	// public ArrayList<Double> expectPXY_f;/*这是我feature的期望，就是我训练的时候需要去让我的p(x)p(y|x)f(x,y)=p(x,y)f(x,y)这个等式的右边*/
 	public int C;    //这是我模型迭代的时候用的参数，类似学习率的东西
-
+	public ArrayList<Double> expectPXY_f;//这是我后来领悟的，之前我求期望的时候，可能没有算全，就是不仅是对一个x，不仅是y=0还有y=1;其实看了stanford的那个介绍，这里面直接数就可以了
 
 	public MaximumEntropy(String configNames) throws Exception
 	{
@@ -230,38 +231,23 @@ public class MaximumEntropy
 		}
 	}
 
-	private void computeEpxyf(boolean flag)
-	{
-		if(p_x==0.0 && p_x_pos_vector==null)
-			computeP_X(flag);
-		if(p_xy==0.0 && p_xy_pos_vector==null)
-			computeP_XY(flag);
-
-		expectPXY_f = new ArrayList<Double>(dimensions);
-		for(int i=0;i<dimensions;i++)
-		{
-			expectPXY_f.set(i,p_)
-		}
-
-			
-
-
-
-	}
-
-
-
-
 	private void computeC()
 	{
 		int[] array = new int[dimensions];
 		int max =0;
-		
+		expectPXY_f = new ArrayList<Double>(dimensions);
+		for(int j=0;j<dimensions;j++)
+		{
+			expectPXY_f.add(0.0);
+		}
+
 		for(ArrayList<Integer> list :posTrainSamples)
 		{
 			for(int i=0;i<dimensions;i++)
 			{
 				array[i]+=list.get(i);
+				int temp = list.get(i) + (expectPXY_f.get(i).intValue());
+				expectPXY_f.set(i,(double)temp);
 			}
 		}
 		for(ArrayList<Integer> list:negTrainSamples)
@@ -269,6 +255,8 @@ public class MaximumEntropy
 			for(int i=0;i<dimensions;i++)
 			{
 				array[i]+=list.get(i);
+				int temp = list.get(i) + (expectPXY_f.get(i).intValue());
+				expectPXY_f.set(i,(double)temp);
 			}
 		}
 
@@ -281,9 +269,9 @@ public class MaximumEntropy
 				max=array[j];
 			}
 		}
-		C=max;
+		System.out.println("max is: "+max);
+		C=(Collections.max(expectPXY_f)).intValue();
 	}
-
 
 
 	public static void main(String[] args) throws Exception
