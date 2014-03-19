@@ -30,9 +30,11 @@ public class MaximumEntropy
 	public ArrayList<Double> p_xy_neg_vector;
 	public double p_xy;
 	public ArrayList<Double> parameters;// 它的维度是实际的2倍，因为我们要训练在不同的class label下的相关参数
-	// public ArrayList<Double> expectPXY_f;/*这是我feature的期望，就是我训练的时候需要去让我的p(x)p(y|x)f(x,y)=p(x,y)f(x,y)这个等式的右边*/
 	public int C;    //这是我模型迭代的时候用的参数，类似学习率的东西
 	public ArrayList<Double> expectPXY_f;//这是我后来领悟的，之前我求期望的时候，可能没有算全，就是不仅是对一个x，不仅是y=0还有y=1;其实看了stanford的那个介绍，这里面直接数就可以了
+
+	public ArrayList<ArrayList<Integer>> posTrainSamplesRotate;
+	public ArrayList<ArrayList<Integer>> negTrainSamplesRotate;
 
 	public MaximumEntropy(String configNames) throws Exception
 	{
@@ -68,8 +70,8 @@ public class MaximumEntropy
 
 	public void initialize(String formatFileName) throws Exception
 	{
-		posTrainSamples = new ArrayList<ArrayList<Integer>>();
-		negTrainSamples = new ArrayList<ArrayList<Integer>>();
+		posTrainSamples = new ArrayList<ArrayList<Integer>>(posSampleNums);
+		negTrainSamples = new ArrayList<ArrayList<Integer>>(negSampleNums);
 		
 		ArrayList<Integer> constructs = new ArrayList<Integer>(dimensions/2);
 		for(int i=0;i<dimensions/2;i++)
@@ -131,6 +133,22 @@ public class MaximumEntropy
 		parameters = new ArrayList<Double>(dimensions);
 		for(int i=0;i<dimensions;i++)
 			parameters.add(0.0);
+
+		//我之前是在计算P(y|x)的时候才算属于另一个label的概率，也就是要反转sample的list,这样每次都需要重新构造，现在直接在initialize的时候初始化
+		posTrainSamplesRotate = new ArrayList<ArrayList<Integer>>(posSampleNums);
+		negTrainSamplesRotate = new ArrayList<ArrayList<Integer>>(negSampleNums);
+		for(ArrayList<Integer> pos:posTrainSamples)
+		{
+			ArrayList<Integer> temp = new ArrayList<Integer>(pos);
+			Collections.rotate(temp,dimensions/2);
+			posTrainSamplesRotate.add(temp);
+		}
+		for(ArrayList<Integer> neg:negTrainSamples)
+		{
+			ArrayList<Integer> temp = new ArrayList<Integer>(neg);
+			Collections.rotate(temp,dimensions/2);
+			negTrainSamplesRotate.add(temp);
+		}
 	}
     
     //我用stanford的maxent的介绍的GIS,它里面的ExpectEmpirical都会有一个1/N,model的Expect也是有1/N的，因为是除法关系，直接约分了。
@@ -183,12 +201,12 @@ public class MaximumEntropy
 		System.out.println("C is " + C);
 	}
 
-	private double computeP_YgivenX(ArrayList<Integer> list)
+	private double computeP_YgivenX(ArrayList<Integer> list,ArrayList<Integer> rotateList)
 	{
-		ArrayList<Integer> temp = new ArrayList<Integer>(list);
-		Collections.rotate(temp,temp.size()/2);
+		// ArrayList<Integer> temp = new ArrayList<Integer>(list);
+		// Collections.rotate(temp,temp.size()/2);
 		double temp1 = computeInner(list,parameters);
-		double temp2 = computeInner(temp,parameters);	
+		double temp2 = computeInner(rotateList,parameters);	
 		return Math.exp(temp1)/Math.exp(temp1+temp2);
 
 	}	
@@ -210,7 +228,7 @@ public class MaximumEntropy
 			for(int j=0;j<posSampleNums;j++)
 			{
 				double f_i = posTrainSamples.get(j).get(dimensionNum);
-				double p_y_givenx = computeP_YgivenX(posTrainSamples.get(j));
+				double p_y_givenx = computeP_YgivenX(posTrainSamples.get(j),posTrainSamplesRotate.get(j));
 				result += p_y_givenx*f_i;
 			}
 		}
@@ -219,7 +237,7 @@ public class MaximumEntropy
 			for(int j=0;j<negSampleNums;j++)
 			{
 				double f_i = posTrainSamples.get(j).get(dimensionNum);
-				double p_y_givenx = computeP_YgivenX(posTrainSamples.get(j));
+				double p_y_givenx = computeP_YgivenX(negTrainSamples.get(j),negTrainSamplesRotate.get(j));
 				result += p_y_givenx*f_i;
 			}
 		}
