@@ -169,6 +169,7 @@ public class MaximumEntropy
 				if(i%100==0)
 					System.out.print(".");
 			}
+			System.out.println();
 			System.out.println("training... the " + time + " time....");
 		}
 	}
