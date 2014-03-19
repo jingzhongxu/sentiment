@@ -130,120 +130,28 @@ public class MaximumEntropy
 		for(int i=0;i<dimensions;i++)
 			parameters.add(0.0);
 	}
-
+    
+    //我用stanford的maxent的介绍的GIS,它里面的ExpectEmpirical都会有一个1/N,model的Expect也是有1/N的，因为是除法关系，直接约分了。
 	public void trainingModel()
 	{
-		computeC();
-
-		for(int time=0;time<iteratorTime;time++)
+		if(expectPXY_f==null)
+			computeC();
+		for(int time=0; time<iteratorTime; time++)
 		{
-			for(int i=0;i<dimensions;i++)
+			for(int i=0; i<dimensions; i++)
 			{
-				double lambdaI = parameters.get(i);
-
+				double expectEmpirical_featureI = expectPXY_f.get(i);
+				double expectIter = computeExpect_f_currentModel(i);
+				double lambda_i = parameters.get(i);
+				lambda_i+= (1/C)*Math.log(expectEmpirical_featureI/expectIter);
+				parameters.set(i,lambda_i);
 			}
-		}
-	}
-
-	private void computeP_X(boolean onOff)
-	{
-		if(onOff == false)
-		{
-			p_x = 1/(posSampleNums+negSampleNums);
-			return;
-		}
-
-		p_x_pos_vector = new ArrayList<Double>(posSampleNums);
-		p_x_neg_vector = new ArrayList<Double>(negSampleNums);
-
-
-		for(int j=0;j<posSampleNums;j++)
-		{
-			int nums = 0;
-			ArrayList<Integer> x = posTrainSamples.get(j);
-			for(ArrayList<Integer> temp:posTrainSamples)
-			{
-				if(isSame(x,temp))
-					nums++;
-			}
-			for(ArrayList<Integer> temp: negTrainSamples)
-			{
-				if(isSame(x,temp))
-					nums++;
-			}
-			p_x_pos_vector.add((double)nums/posSampleNums);		
-		}
-		for(int j=0;j<negSampleNums;j++)
-		{
-			int nums = 0;
-			ArrayList<Integer> x = negTrainSamples.get(j);
-			for(ArrayList<Integer> temp:posTrainSamples)
-			{
-				if(isSame(x,temp))
-					nums++;
-			}
-			for(ArrayList<Integer> temp: negTrainSamples)
-			{
-				if(isSame(x,temp))
-					nums++;
-			}
-			p_x_neg_vector.add((double)nums/negSampleNums);		
-		}
-	}
-	private boolean isSame(ArrayList<Integer> list1,ArrayList<Integer>list2)
-	{
-		boolean flag = true;
-		for(int i=0;i<dimensions;i++)
-		{
-			if(list1.get(i)==list2.get(i))
-				continue;
-			else
-			{
-				flag = false;
-				return flag;
-			}	
-		}
-		return flag;
-	}
-	private void computeP_XY(boolean onOff)
-	{
-		if(onOff == false)
-		{
-			p_xy = 1/(posSampleNums+negSampleNums);
-			return;
-		}
-
-		p_xy_pos_vector = new ArrayList<Double>(posSampleNums);
-		p_xy_neg_vector = new ArrayList<Double>(negSampleNums);
-
-		for(int j=0;j<posSampleNums;j++)
-		{
-			int nums = 0;
-			ArrayList<Integer> x = posTrainSamples.get(j);
-			for(ArrayList<Integer> temp:posTrainSamples)
-			{
-				if(isSame(x,temp))
-					nums++;
-			}
-			p_xy_pos_vector.add((double)nums/posSampleNums);		
-		}
-		for(int j=0;j<negSampleNums;j++)
-		{
-			int nums = 0;
-			ArrayList<Integer> x = negTrainSamples.get(j);
-			for(ArrayList<Integer> temp:negTrainSamples)
-			{
-				if(isSame(x,temp))
-					nums++;
-			}
-			p_xy_neg_vector.add((double)nums/posSampleNums);		
+			System.out.println("training... the " + time + " time....");
 		}
 	}
 
 	private void computeC()
 	{
-		// int[] array = new int[dimensions];
-		// int max =0;
 		expectPXY_f = new ArrayList<Double>(dimensions);
 		for(int j=0;j<dimensions;j++)
 		{
@@ -254,7 +162,6 @@ public class MaximumEntropy
 		{
 			for(int i=0;i<dimensions;i++)
 			{
-				// array[i]+=list.get(i);
 				int temp = list.get(i) + (expectPXY_f.get(i).intValue());
 				expectPXY_f.set(i,(double)temp);
 			}
@@ -263,32 +170,21 @@ public class MaximumEntropy
 		{
 			for(int i=0;i<dimensions;i++)
 			{
-				// array[i]+=list.get(i);
 				int temp = list.get(i) + (expectPXY_f.get(i).intValue());
 				expectPXY_f.set(i,(double)temp);
 			}
 		}
-
-		// for(int j=0;j<dimensions;j++)
-		// {
-		// 	if(array[j]<max)
-		// 		continue;
-		// 	else
-		// 	{
-		// 		max=array[j];
-		// 	}
-		// }
-		// System.out.println("max is: "+max);
 		C=(Collections.max(expectPXY_f)).intValue();
+		System.out.println("C is "+C);
 	}
 
 	private double computeP_YgivenX(ArrayList<Integer> list)
 	{
 		ArrayList<Integer> temp = new ArrayList<Integer>(list);
 		Collections.rotate(temp,temp.size()/2);
-		int temp1 = computeInner(list,parameters);
-		int temp2 = computeInner(temp,parameters);	
-		return Math.log(temp1)/Math.log(temp1+temp2);
+		double temp1 = computeInner(list,parameters);
+		double temp2 = computeInner(temp,parameters);	
+		return Math.exp(temp1)/Math.exp(temp1+temp2);
 
 	}	
 	private double computeInner(ArrayList<Integer> feature,ArrayList<Double> para)
@@ -299,15 +195,29 @@ public class MaximumEntropy
 		return sum;
 	}
 
-	private ArrayList<Double> computeExpect_fInEachIter()
+	private double computeExpect_f_currentModel(int dimensionNum)
 	{
-		ArrayList<Double> list = new ArrayList<Double>();
-		for(int i=0;i<dimensions;i++)
+		double result =0.0;
+		if(dimensionNum < parameters.size()/2)
 		{
-			
+			for(int j=0;j<posSampleNums;j++)
+			{
+				double f_i = posTrainSamples.get(j).get(dimensionNum);
+				double p_y_givenx = computeP_YgivenX(posTrainSamples.get(j));
+				result += p_y_givenx*f_i;
+			}
 		}
+		else
+		{
+			for(int j=0;j<negSampleNums;j++)
+			{
+				double f_i = posTrainSamples.get(j).get(dimensionNum);
+				double p_y_givenx = computeP_YgivenX(posTrainSamples.get(j));
+				result += p_y_givenx*f_i;
+			}
+		}
+		return result;
 	}
-
 
 
 	public static void main(String[] args) throws Exception
@@ -319,6 +229,7 @@ public class MaximumEntropy
 		System.out.println("maximumEntropy.negSampleNums="+maximumEntropy.negSampleNums);
 		System.out.println("----------------------------------");
 
+		System.out.println("initialize....");		
 		maximumEntropy.initialize("./tempResult/trainFormat.out");
 		System.out.println(maximumEntropy.posTrainSamples.size());
 		System.out.println(maximumEntropy.negTrainSamples.size());
@@ -327,10 +238,14 @@ public class MaximumEntropy
 		maximumEntropy.computeC();
 		System.out.println(maximumEntropy.C);
 
-		System.out.println("maximumEntropy computeP_X......");
-		maximumEntropy.computeP_X(true);
-		System.out.println(maximumEntropy.p_x_neg_vector.size());
-		System.out.println("random test:" + maximumEntropy.p_x_pos_vector.get(0));
+
+		System.out.println("training model...");
+		maximumEntropy.trainingModel();
+
+		// System.out.println("maximumEntropy computeP_X......");
+		// maximumEntropy.computeP_X(true);
+		// System.out.println(maximumEntropy.p_x_neg_vector.size());
+		// System.out.println("random test:" + maximumEntropy.p_x_pos_vector.get(0));
 
 		// System.out.println("maximumEntropy computeP_XY......");
 		// maximumEntropy.computeP_XY(true);
@@ -339,7 +254,104 @@ public class MaximumEntropy
 	}
 }
 
-public enum Classification
+
+
+	// private void computeP_X(boolean onOff)
+	// {
+	// 	if(onOff == false)
+	// 	{
+	// 		p_x = 1/(posSampleNums+negSampleNums);
+	// 		return;
+	// 	}
+
+	// 	p_x_pos_vector = new ArrayList<Double>(posSampleNums);
+	// 	p_x_neg_vector = new ArrayList<Double>(negSampleNums);
+
+
+	// 	for(int j=0;j<posSampleNums;j++)
+	// 	{
+	// 		int nums = 0;
+	// 		ArrayList<Integer> x = posTrainSamples.get(j);
+	// 		for(ArrayList<Integer> temp:posTrainSamples)
+	// 		{
+	// 			if(isSame(x,temp))
+	// 				nums++;
+	// 		}
+	// 		for(ArrayList<Integer> temp: negTrainSamples)
+	// 		{
+	// 			if(isSame(x,temp))
+	// 				nums++;
+	// 		}
+	// 		p_x_pos_vector.add((double)nums/posSampleNums);		
+	// 	}
+	// 	for(int j=0;j<negSampleNums;j++)
+	// 	{
+	// 		int nums = 0;
+	// 		ArrayList<Integer> x = negTrainSamples.get(j);
+	// 		for(ArrayList<Integer> temp:posTrainSamples)
+	// 		{
+	// 			if(isSame(x,temp))
+	// 				nums++;
+	// 		}
+	// 		for(ArrayList<Integer> temp: negTrainSamples)
+	// 		{
+	// 			if(isSame(x,temp))
+	// 				nums++;
+	// 		}
+	// 		p_x_neg_vector.add((double)nums/negSampleNums);		
+	// 	}
+	// }
+	// private boolean isSame(ArrayList<Integer> list1,ArrayList<Integer>list2)
+	// {
+	// 	boolean flag = true;
+	// 	for(int i=0;i<dimensions;i++)
+	// 	{
+	// 		if(list1.get(i)==list2.get(i))
+	// 			continue;
+	// 		else
+	// 		{
+	// 			flag = false;
+	// 			return flag;
+	// 		}	
+	// 	}
+	// 	return flag;
+	// }
+	// private void computeP_XY(boolean onOff)
+	// {
+	// 	if(onOff == false)
+	// 	{
+	// 		p_xy = 1/(posSampleNums+negSampleNums);
+	// 		return;
+	// 	}
+
+	// 	p_xy_pos_vector = new ArrayList<Double>(posSampleNums);
+	// 	p_xy_neg_vector = new ArrayList<Double>(negSampleNums);
+
+	// 	for(int j=0;j<posSampleNums;j++)
+	// 	{
+	// 		int nums = 0;
+	// 		ArrayList<Integer> x = posTrainSamples.get(j);
+	// 		for(ArrayList<Integer> temp:posTrainSamples)
+	// 		{
+	// 			if(isSame(x,temp))
+	// 				nums++;
+	// 		}
+	// 		p_xy_pos_vector.add((double)nums/posSampleNums);		
+	// 	}
+	// 	for(int j=0;j<negSampleNums;j++)
+	// 	{
+	// 		int nums = 0;
+	// 		ArrayList<Integer> x = negTrainSamples.get(j);
+	// 		for(ArrayList<Integer> temp:negTrainSamples)
+	// 		{
+	// 			if(isSame(x,temp))
+	// 				nums++;
+	// 		}
+	// 		p_xy_neg_vector.add((double)nums/posSampleNums);		
+	// 	}
+	// }
+
+enum Classification
 {
 	POS(1),NEG(0);
 
@@ -348,7 +360,7 @@ public enum Classification
 	{
 		statusCode = i;
 	}
-	public getStatusCode()
+	public int getStatusCode()
 	{
 		return statusCode;
 	}
