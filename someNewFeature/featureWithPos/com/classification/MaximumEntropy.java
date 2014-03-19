@@ -169,8 +169,7 @@ public class MaximumEntropy
 				if(i%100==0)
 					System.out.print(".");
 			}
-			System.out.println();
-			System.out.println("training... the " + time + " time....");
+			System.out.println("\ntraining the " + time + " time....");
 		}
 	}
 
@@ -229,6 +228,8 @@ public class MaximumEntropy
 			for(int j=0;j<posSampleNums;j++)
 			{
 				double f_i = posTrainSamples.get(j).get(dimensionNum);
+				if(f_i==0)
+					continue;
 				double p_y_givenx = computeP_YgivenX(posTrainSamples.get(j),posTrainSamplesRotate.get(j));
 				result += p_y_givenx*f_i;
 			}
@@ -238,6 +239,8 @@ public class MaximumEntropy
 			for(int j=0;j<negSampleNums;j++)
 			{
 				double f_i = posTrainSamples.get(j).get(dimensionNum);
+				if(f_i==0)
+					continue;
 				double p_y_givenx = computeP_YgivenX(negTrainSamples.get(j),negTrainSamplesRotate.get(j));
 				result += p_y_givenx*f_i;
 			}

@@ -73,7 +73,7 @@ def __computeZx(parameters,features_pos,features_neg):
 
 # compute Epfi for the constraint which value must equals to Epfi(empirical expected)
 def __computeEpfiConstraint(index_f,allFeatures,px,boundryTwoClass,sentimentWordLength,parameters,pYGivenX_all):
-	if index_f%1000==0:print("index_f",index_f)
+	# if index_f%1000==0:print("index_f",index_f)
 	EpfiList = []
 	for index,features in enumerate(allFeatures):
 		px_x = px[index]
@@ -139,7 +139,7 @@ def pickleParameters(filename,parameters):
 
 def work(iterNums):
 	print("init work! ",datetime.datetime.now())
-	sentimentWord,allFeatures,boundryTwoClass = init("./corpus/all1","./corpus/fre4train.txt")
+	sentimentWord,allFeatures,boundryTwoClass = init("./corpus/train","./corpus/fre4train.txt")
 	print("prepare work finished ",datetime.datetime.now())
 	print("training model... ", datetime.datetime.now())
 	parameters = maxEntTrain(sentimentWord,allFeatures,boundryTwoClass,iterNums)
@@ -219,7 +219,7 @@ def main():
 	__testComputeEpfExpect()
 	print("***"*20)
 
-	# __testAll()
+	__testAll()
 
 if __name__=='__main__':
-	main()
+	work(30)
