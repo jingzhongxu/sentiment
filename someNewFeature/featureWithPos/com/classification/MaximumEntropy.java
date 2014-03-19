@@ -9,6 +9,8 @@ import java.io.FileInputStream;
 import java.io.Reader;
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 
 
 public class MaximumEntropy
@@ -69,8 +71,8 @@ public class MaximumEntropy
 		posTrainSamples = new ArrayList<ArrayList<Integer>>();
 		negTrainSamples = new ArrayList<ArrayList<Integer>>();
 		
-		ArrayList<Integer> constructs = new ArrayList<Integer>(dimensions);
-		for(int i=0;i<dimensions;i++)
+		ArrayList<Integer> constructs = new ArrayList<Integer>(dimensions/2);
+		for(int i=0;i<dimensions/2;i++)
 			constructs.add(0);
 
 		BufferedReader br = new BufferedReader(new FileReader(new File(formatFileName)));
@@ -145,6 +147,9 @@ public class MaximumEntropy
 				double lambda_i = parameters.get(i);
 				lambda_i+= (1/C)*Math.log(expectEmpirical_featureI/expectIter);
 				parameters.set(i,lambda_i);
+				
+				if(i%100==0)
+					System.out.print(".");
 			}
 			System.out.println("training... the " + time + " time....");
 		}
@@ -175,7 +180,7 @@ public class MaximumEntropy
 			}
 		}
 		C=(Collections.max(expectPXY_f)).intValue();
-		System.out.println("C is "+C);
+		System.out.println("C is " + C);
 	}
 
 	private double computeP_YgivenX(ArrayList<Integer> list)
@@ -189,6 +194,8 @@ public class MaximumEntropy
 	}	
 	private double computeInner(ArrayList<Integer> feature,ArrayList<Double> para)
 	{
+		// System.out.println("feature size " + feature.size());
+		// System.out.println("para size " + para.size());
 		double sum=0;
 		for(int i=0;i<feature.size();i++)
 			sum+=feature.get(i)*para.get(i);
@@ -242,19 +249,19 @@ public class MaximumEntropy
 		System.out.println("training model...");
 		maximumEntropy.trainingModel();
 
-		// System.out.println("maximumEntropy computeP_X......");
-		// maximumEntropy.computeP_X(true);
-		// System.out.println(maximumEntropy.p_x_neg_vector.size());
-		// System.out.println("random test:" + maximumEntropy.p_x_pos_vector.get(0));
 
-		// System.out.println("maximumEntropy computeP_XY......");
-		// maximumEntropy.computeP_XY(true);
-		// System.out.println(maximumEntropy.p_xy_neg_vector.size());
-		// System.out.println("random test:"+ maximumEntropy.p_xy_pos_vector.get(1));
+		maximumEntropy.outputTrainResult("./tempResult/MaxentTrainResult.out");
 	}
-}
 
-
+	private void outputTrainResult(String fileName) throws Exception
+	{
+		BufferedWriter bw = new BufferedWriter(new FileWriter(new File(fileName)));
+		for(int i=0;i<dimensions;i++)
+		{
+			bw.write(parameters.get(i)+" ");
+		}
+		bw.write("\n");
+	}
 
 	// private void computeP_X(boolean onOff)
 	// {
@@ -350,6 +357,7 @@ public class MaximumEntropy
 	// 		p_xy_neg_vector.add((double)nums/posSampleNums);		
 	// 	}
 	// }
+}
 
 enum Classification
 {
