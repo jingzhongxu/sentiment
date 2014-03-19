@@ -133,7 +133,16 @@ public class MaximumEntropy
 
 	public void trainingModel()
 	{
+		computeC();
 
+		for(int time=0;time<iteratorTime;time++)
+		{
+			for(int i=0;i<dimensions;i++)
+			{
+				double lambdaI = parameters.get(i);
+
+			}
+		}
 	}
 
 	private void computeP_X(boolean onOff)
@@ -233,8 +242,8 @@ public class MaximumEntropy
 
 	private void computeC()
 	{
-		int[] array = new int[dimensions];
-		int max =0;
+		// int[] array = new int[dimensions];
+		// int max =0;
 		expectPXY_f = new ArrayList<Double>(dimensions);
 		for(int j=0;j<dimensions;j++)
 		{
@@ -245,7 +254,7 @@ public class MaximumEntropy
 		{
 			for(int i=0;i<dimensions;i++)
 			{
-				array[i]+=list.get(i);
+				// array[i]+=list.get(i);
 				int temp = list.get(i) + (expectPXY_f.get(i).intValue());
 				expectPXY_f.set(i,(double)temp);
 			}
@@ -254,24 +263,51 @@ public class MaximumEntropy
 		{
 			for(int i=0;i<dimensions;i++)
 			{
-				array[i]+=list.get(i);
+				// array[i]+=list.get(i);
 				int temp = list.get(i) + (expectPXY_f.get(i).intValue());
 				expectPXY_f.set(i,(double)temp);
 			}
 		}
 
-		for(int j=0;j<dimensions;j++)
-		{
-			if(array[j]<max)
-				continue;
-			else
-			{
-				max=array[j];
-			}
-		}
-		System.out.println("max is: "+max);
+		// for(int j=0;j<dimensions;j++)
+		// {
+		// 	if(array[j]<max)
+		// 		continue;
+		// 	else
+		// 	{
+		// 		max=array[j];
+		// 	}
+		// }
+		// System.out.println("max is: "+max);
 		C=(Collections.max(expectPXY_f)).intValue();
 	}
+
+	private double computeP_YgivenX(ArrayList<Integer> list)
+	{
+		ArrayList<Integer> temp = new ArrayList<Integer>(list);
+		Collections.rotate(temp,temp.size()/2);
+		int temp1 = computeInner(list,parameters);
+		int temp2 = computeInner(temp,parameters);	
+		return Math.log(temp1)/Math.log(temp1+temp2);
+
+	}	
+	private double computeInner(ArrayList<Integer> feature,ArrayList<Double> para)
+	{
+		double sum=0;
+		for(int i=0;i<feature.size();i++)
+			sum+=feature.get(i)*para.get(i);
+		return sum;
+	}
+
+	private ArrayList<Double> computeExpect_fInEachIter()
+	{
+		ArrayList<Double> list = new ArrayList<Double>();
+		for(int i=0;i<dimensions;i++)
+		{
+			
+		}
+	}
+
 
 
 	public static void main(String[] args) throws Exception
@@ -296,13 +332,27 @@ public class MaximumEntropy
 		System.out.println(maximumEntropy.p_x_neg_vector.size());
 		System.out.println("random test:" + maximumEntropy.p_x_pos_vector.get(0));
 
-		System.out.println("maximumEntropy computeP_XY......");
-		maximumEntropy.computeP_XY(true);
-		System.out.println(maximumEntropy.p_xy_neg_vector.size());
-		System.out.println("random test:"+ maximumEntropy.p_xy_pos_vector.get(1));
+		// System.out.println("maximumEntropy computeP_XY......");
+		// maximumEntropy.computeP_XY(true);
+		// System.out.println(maximumEntropy.p_xy_neg_vector.size());
+		// System.out.println("random test:"+ maximumEntropy.p_xy_pos_vector.get(1));
 	}
+}
 
 
 
 
+public enum Classification
+{
+	POS(1),NEG(0);
+
+	private int statusCode;
+	private Classification(int i)
+	{
+		statusCode = i;
+	}
+	public getStatusCode()
+	{
+		return statusCode;
+	}
 }
