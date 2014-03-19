@@ -302,7 +302,4 @@ public class MaximumEntropy
 		System.out.println("random test:"+ maximumEntropy.p_xy_pos_vector.get(1));
 	}
 
-
-
-
 }
