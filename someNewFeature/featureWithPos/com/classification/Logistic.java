@@ -248,7 +248,7 @@ public class Logistic
 		for(ArrayList<Integer> samples:posTestSamples)
 		{
 			double finalValue = computeFunctionH(samples,parameters);
-			if(finalValue >=0.5)
+			if(finalValue >0.5)
 				posResult.add(true);
 			else
 				posResult.add(false);
@@ -256,7 +256,7 @@ public class Logistic
 		for(ArrayList<Integer> samples:negTestSamples)
 		{
 			double finalValue = computeFunctionH(samples,parameters);
-			if(finalValue <=0.5)
+			if(finalValue <0.5)
 				negResult.add(true);
 			else
 				negResult.add(false);

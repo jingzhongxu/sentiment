@@ -1,11 +1,17 @@
 1.我将特征设定为词语加词性，首先只选取特定的词性，形容词，副词，动词。其次用互信息对特征进行抽取，进行降维，按互信息从高向低进行降维
+(0)用100%的特征，共13009个
+   LIBSVM:
+
+   Logistic:
+     posAccuracy=0.9142857142857143,posRecall=0.8,posFscore=0.8533333333333333
+     negAccuracy=0.8222222222222222,negRecall=0.925,negFscore=0.8705882352941177
 (1)用80%的特征，共10407个
    LIBSVM： 
      posAccuracy= 0.875 ,posRecall= 0.945 ,posFscore= 0.9086538461538461
      negAccuracy= 0.9402173913043478 ,negRecall= 0.865 ,negFscore= 0.9010416666666665
    Logistic:
-     pos accuracy = 0.5803571428571429,pos recall = 0.975,pos f-score =0.7276119402985075 
-     neg accuracy = 0.921875,neg recall = 0.295,neg f-score =0.44696969696969696
+     posAccuracy=0.9383886255924171,posRecall=0.99,posFscore=0.9635036496350365
+     negAccuracy=0.9894179894179894,negRecall=0.935,negFscore=0.9614395886889462
 (2)用60%的特征，共7805个
    LIBSVM:
      posAccuracy= 0.8194444444444444 ,posRecall= 0.885 ,posFscore= 0.8509615384615384
