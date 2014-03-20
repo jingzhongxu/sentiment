@@ -115,7 +115,7 @@ public class Prepare4TrainMI
 	{
 		Prepare4TrainMI prepare4TrainMIObj = new Prepare4TrainMI("../corpus/all/pos","../corpus/all/neg");
 		// prepare4TrainMIObj.getFeatureByMIObj.outputSortedSort(GetFeatureByMI.sortMiDict(prepare4TrainMIObj.getFeatureByMIObj.featureMI),30);
-		prepare4TrainMIObj.setFinalFeature((int)(prepare4TrainMIObj.getFeatureByMIObj.featureMI.size()*0.6));
+		prepare4TrainMIObj.setFinalFeature((int)(prepare4TrainMIObj.getFeatureByMIObj.featureMI.size()*0.8));
 		prepare4TrainMIObj.getRepreset(200);
 
 		System.out.println(prepare4TrainMIObj.posTrainRepresent.size());

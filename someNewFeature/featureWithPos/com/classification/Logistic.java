@@ -266,12 +266,7 @@ public class Logistic
 		double[] accuracy = computeAccuracy(posResult,negResult);
 		double posRecall = computeRecall(posResult);
 		double negRecall = computeRecall(negResult);
-		// System.out.println("posAccuracy = " + accuracy[0]);
-		// System.out.println("neg accuracy = " + accuracy[1]);
-		// System.out.println("pos recall = " + posRecall);
-		// System.out.println("neg recall = " + negRecall);
-		// System.out.println("pos f-score =" + computeFScore(accuracy[0],posRecall));
-		// System.out.println("neg f-score =" + computeFScore(accuracy[1],negRecall));
+
 		System.out.println("posAccuracy=" + accuracy[0] + ",posRecall=" + posRecall + ",posFscore=" + computeFScore(accuracy[0],posRecall));
 		System.out.println("negAccuracy=" + accuracy[1] + ",negRecall=" + negRecall + ",negFscore=" + computeFScore(accuracy[1],negRecall));
 	}
