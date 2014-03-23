@@ -20,6 +20,11 @@
    Logistic:
      posAccuracy=0.9383886255924171,posRecall=0.99,posFscore=0.9635036496350365
      negAccuracy=0.9894179894179894,negRecall=0.935,negFscore=0.9614395886889462
+  MaxEnt:
+     posAccuracy= 0.5718849840255591 ,posRecall= 0.895 ,posFscore= 0.6978557504873294
+     negAccuracy= 0.7613636363636364 ,negRecall= 0.3333333333333333 ,negFscore= 0.46366782006920415
+
+
 (2)用60%的特征，共7805个
    LIBSVM:
      posAccuracy= 0.8194444444444444 ,posRecall= 0.885 ,posFscore= 0.8509615384615384
