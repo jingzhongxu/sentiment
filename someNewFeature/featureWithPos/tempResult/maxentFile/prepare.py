@@ -5,14 +5,12 @@ def prepare(fileInName,fileOutName):
 
 def writeFile(fw,line):
 	if line[0]=="+":
-		fw.write("T ")
+		fw.write("P ")
 		[fw.write(str(index)+"_"+token+" ") for index,token in enumerate((line.strip()[4:]).split()) if token!='0']
-		# fw.write("T"+line.strip()[3:]+"\n")
 		fw.write("\n")
 	else:
-		fw.write("F ")
+		fw.write("N ")
 		[fw.write(str(index)+"_"+token+" ") for index,token in enumerate((line.strip()[4:]).split()) if token!='0']
-		# fw.write("T"+line.strip()[3:]+"\n")
 		fw.write("\n")		
 
 def main():

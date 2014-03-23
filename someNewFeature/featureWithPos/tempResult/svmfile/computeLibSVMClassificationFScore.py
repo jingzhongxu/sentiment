@@ -1,3 +1,4 @@
+import sys
 class Compute:
 	def __init__(self,libsvmResultFileName,divideNumber):
 		self.filename = libsvmResultFileName
@@ -38,7 +39,10 @@ class Compute:
 		print("negAccuracy=",self.negAccuracy,",negRecall=",self.negRecall,",negFscore=",self.negFscore)
 
 def main():
-	obj = Compute("./testFormat.result.out",200)
+	if len(sys.argv)!=2:
+		print("[useage processFile")
+		return
+	obj = Compute(sys.argv[1],200)
 	obj.outputResult()
 
 def test():
