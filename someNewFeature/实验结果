@@ -20,7 +20,7 @@
    Logistic:
      posAccuracy=0.9383886255924171,posRecall=0.99,posFscore=0.9635036496350365
      negAccuracy=0.9894179894179894,negRecall=0.935,negFscore=0.9614395886889462
-  MaxEnt:
+   MaxEnt:
      posAccuracy= 0.5718849840255591 ,posRecall= 0.895 ,posFscore= 0.6978557504873294
      negAccuracy= 0.7613636363636364 ,negRecall= 0.3333333333333333 ,negFscore= 0.46366782006920415
 
@@ -32,6 +32,10 @@
    Logistic:
      posAccuracy=0.5541795665634675,posRecall=0.895,posFscore=0.6845124282982792
      negAccuracy=0.7272727272727273,negRecall=0.28,negFscore=0.40433212996389895
+   MaxEnt:
+     posAccuracy= 0.591715976331361 ,posRecall= 1.0 ,posFscore= 0.7434944237918216
+     negAccuracy= 1.0 ,negRecall= 0.31343283582089554 ,negFscore= 0.4772727272727273
+
 (3)用40%的特征，共5203个
    LIBSVM:
       posAccuracy= 0.7925531914893617 ,posRecall= 0.745 ,posFscore= 0.7680412371134021
@@ -39,4 +43,8 @@
    Logistic:
       posAccuracy=0.49825783972125437,posRecall=0.715,posFscore=0.5872689938398357
       negAccuracy=0.49557522123893805,negRecall=0.28,negFscore=0.35782747603833864
+   MaxEnt:
+      posAccuracy= 0.5863095238095238 ,posRecall= 0.985 ,posFscore= 0.7350746268656717
+      negAccuracy= 0.9538461538461539 ,negRecall= 0.30845771144278605 ,negFscore= 0.46616541353383456
+
 
