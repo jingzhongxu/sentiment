@@ -1,6 +1,11 @@
 import java.util.ArrayList;
 import java.io.File;
+import java.io.FileReader;
+import java.io.BufferedReader;
+
 import java.util.HashMap;
+
+
 
 public SoftmaxRegression
 {
@@ -16,11 +21,17 @@ public SoftmaxRegression
 		this.parameters = parameters;
 	}
 
-	public void getSamples(int sampleNums,File file)
+	public void getSamples(File file) throws Exception
 	{
-		this.sampleNums = sampleNums;
-		samples = new HashMap<ArrayList<Double>,Integer>(sampleNums); 
-				
+		samples = new HashMap<ArrayList<Double>,Integer>();
+
+		ArrayList<Double> oneStarSample = new ArrayList<Double>();
+		ArrayList<Double> twoStarSample = new ArrayList<Double>();
+		ArrayList<Double> threeStarSample = new ArrayList<Double>();
+		ArrayList<Double> fourStarSample = new ArrayList<Double>();
+		ArrayList<Double> fiveStarSample = new ArrayList<Double>();
+
+		BufferedReader br = new BufferedReader(new FileReader(file));
 
 
 	}
