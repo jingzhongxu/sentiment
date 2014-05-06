@@ -17,6 +17,12 @@ public class SoftmaxRegression
 	public int parameterNums;
 	public int sampleNums = 0;
 
+	ArrayList<ArrayList<Double>> oneStarSamples;
+	ArrayList<ArrayList<Double>> twoStarSamples;
+	ArrayList<ArrayList<Double>> threeStarSamples;
+	ArrayList<ArrayList<Double>> fourStarSamples;
+	ArrayList<ArrayList<Double>> fiveStarSamples;
+
 	public SoftmaxRegression(int starNums,int classNums,int parameterNums)
 	{
 		this.classNums = classNums;
@@ -28,17 +34,18 @@ public class SoftmaxRegression
 		{
 			parameters.add((ArrayList<Double>)singleParameter.clone());
 		}
+
+		oneStarSamples = new ArrayList<ArrayList<Double>>();
+		twoStarSamples = new ArrayList<ArrayList<Double>>();
+		threeStarSamples = new ArrayList<ArrayList<Double>>();
+		fourStarSamples = new ArrayList<ArrayList<Double>>();
+		fiveStarSamples = new ArrayList<ArrayList<Double>>();
+
 	}
 
 	public void initilize(String file) throws Exception
 	{
 		samples = new HashMap<Integer,ArrayList<ArrayList<Double>>>();
-
-		ArrayList<ArrayList<Double>> oneStarSamples = new ArrayList<ArrayList<Double>>();
-		ArrayList<ArrayList<Double>> twoStarSamples = new ArrayList<ArrayList<Double>>();
-		ArrayList<ArrayList<Double>> threeStarSamples = new ArrayList<ArrayList<Double>>();
-		ArrayList<ArrayList<Double>> fourStarSamples = new ArrayList<ArrayList<Double>>();
-		ArrayList<ArrayList<Double>> fiveStarSamples = new ArrayList<ArrayList<Double>>();
 
 		BufferedReader br = new BufferedReader(new FileReader(file));
 		String content;
@@ -78,14 +85,14 @@ public class SoftmaxRegression
 		sampleNums = lineNums;
 	}
 
-	public void training(double alpha,int iternums)
+	public void training(double alpha,int iternums) throws Exception
 	{
 		for(int iter=0; iter<iternums; iter++)
 		{
 			for(ArrayList<Double> oneStarSample : oneStarSamples)
 			{
 				ArrayList<Double> expResult = getInner(oneStarSample);
-				double sum = expResult.stream().sum();
+				double sum = expResult.stream().mapToDouble(o1 -> o1).sum();
 				for(int j=0; j<classNums; j++)
 				{
 					double p = expResult.get(0)/sum;
@@ -117,7 +124,7 @@ public class SoftmaxRegression
 
 	private double computeGradient()
 	{
-		return 0.0;
+		return 0;
 	}
 
 	public double computeProbabilityOfGivenXAndEqualsJ(int j,ArrayList<Double> singleSamples) throws Exception
@@ -140,7 +147,14 @@ public class SoftmaxRegression
 		ArrayList<Double> result = new ArrayList<Double>(classNums);
 		parameters
 		.stream()
-		.map(o1 -> {return Math.exp(computeInner(o1,singleSamples));})
+		.map(o1 -> { 
+			try{
+				return Math.exp(computeInner(o1,singleSamples));
+			}
+			catch(Exception e){
+				throw e;
+			}
+		})
 		.forEach(o1 -> {result.add(o1);});
 		return result;
 	}
