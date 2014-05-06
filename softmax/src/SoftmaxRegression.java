@@ -100,6 +100,18 @@ public class SoftmaxRegression
 	}
 
 	private double computeInner(ArrayList<Double> thetaVector,ArrayList<Double> singleSamples) throws Exception
+
+	{
+		if(thetaVector.size()!= singleSamples.size())
+			throw new Exception("the length is wrong in computeInner");
+		
+		for(int i=0; i<thetaVector.size(); i++)
+		{
+			
+		}
+	}
+
+	private double computeGradient()
 	{
 		if(thetaVector.size()!= singleSamples.size())
 		{
