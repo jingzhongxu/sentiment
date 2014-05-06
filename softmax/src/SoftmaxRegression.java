@@ -80,15 +80,69 @@ public class SoftmaxRegression
 
 	public void training(double alpha,int iternums)
 	{
-		for(int i=0; i<iternums;i++)
+		for(int iter=0; iter<iternums; iter++)
 		{
+			for(ArrayList<Double> oneStarSample : oneStarSamples)
+			{
+				ArrayList<Double> expResult = getInner(oneStarSample);
+				double sum = expResult.stream().sum();
+				for(int j=0; j<classNums; j++)
+				{
+					double p = expResult.get(0)/sum;
+					for(int n=0; n<parameterNums; n++)
+					{
+
+					}
+				}
+			}
 
 		}
 	}
 
-	private double computeGradient()
+	private double computeInner(ArrayList<Double> thetaVector,ArrayList<Double> singleSamples) throws Exception
 	{
+		if(thetaVector.size()!= singleSamples.size())
+		{
+			throw new Exception("the length is wrong in computeInner");
+		}		
 		
+		double sum = 0;
+
+		for(int i=0; i<thetaVector.size(); i++)
+		{
+			sum += thetaVector.get(i) * singleSamples.get(i);
+		}
+		return sum;
+	}
+
+	public double computeProbabilityOfGivenXAndEqualsJ(int j,ArrayList<Double> singleSamples) throws Exception
+	{
+		double pj = 0.0;
+		double sum = 0.0;
+		for(int i=0; i<parameters.size(); i++)
+		{
+			double temp_1 = computeInner(parameters.get(i),singleSamples);
+			double temp_2 = Math.exp(temp_1);
+			if(i==j-1)
+				pj = temp_2;
+			sum += temp_2;
+		}
+		return pj/sum;
+	}
+
+	private ArrayList<Double> getInner(ArrayList<Double> singleSamples) throws Exception
+	{
+		ArrayList<Double> result = new ArrayList<Double>(classNums);
+		parameters
+		.stream()
+		.map(o1 -> {return Math.exp(computeInner(o1,singleSamples));})
+		.forEach(o1 -> {result.add(o1);});
+		return result;
+	}
+
+	private double computeGradient4lineJ(int y,int j)
+	{
+		return 0;
 	}
 
 }
