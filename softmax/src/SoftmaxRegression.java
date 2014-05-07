@@ -12,23 +12,28 @@ public class SoftmaxRegression
 	public HashMap<Integer,ArrayList<ArrayList<Double>>> samples;
 	public ArrayList<ArrayList<Double>> parameters;
 	public int starNums = 5;//多分类的类别数
-	public int classNums; //参数的维度
 	
-	public int parameterNums;
+	public int parameterNums;//参数的维度
 	public int sampleNums = 0;
 
+	ArrayList<Double> singleParameter;
 	ArrayList<ArrayList<Double>> oneStarSamples;
 	ArrayList<ArrayList<Double>> twoStarSamples;
 	ArrayList<ArrayList<Double>> threeStarSamples;
 	ArrayList<ArrayList<Double>> fourStarSamples;
 	ArrayList<ArrayList<Double>> fiveStarSamples;
 
-	public SoftmaxRegression(int starNums,int classNums,int parameterNums)
+	public SoftmaxRegression(int starNums,int parameterNums)
 	{
-		this.classNums = classNums;
 		this.parameterNums = parameterNums;
 		parameters = new ArrayList<ArrayList<Double>>(starNums);
-		ArrayList<Double> singleParameter = new ArrayList<Double>(classNums);
+		
+		singleParameter = new ArrayList<Double>(parameterNums);
+		for(int j=0;j<parameterNums;j++)
+		{
+			singleParameter.add(0.0);
+		}	
+
 		parameters.add(singleParameter);
 		for(int i=1; i<starNums; i++)
 		{
@@ -50,39 +55,44 @@ public class SoftmaxRegression
 		BufferedReader br = new BufferedReader(new FileReader(file));
 		String content;
 		int lineNums=0;
+
 		while(null != (content = br.readLine()))
 		{
 			String[] firstSplit = content.split(":");
 			int star = Integer.valueOf(firstSplit[0].trim());
-			ArrayList<Double> singleSamples = new ArrayList<Double>(classNums);
+			
 			String[] secondSplit = firstSplit[1].trim().split(" ");
-			System.out.println(secondSplit.length);
+			// System.out.println(secondSplit.length);
+			ArrayList<Double> singleSample = (ArrayList<Double>)singleParameter.clone();
+
 			for(int i =0; i< secondSplit.length; i++)
 			{
-				singleSamples.set(i,Double.valueOf(secondSplit[i]));
+				singleSample.set(i,Double.valueOf(secondSplit[i]));
 			}
 			switch(star)
 			{
 				case 1:
-					oneStarSamples.add(singleSamples);
+					oneStarSamples.add(singleSample);
 					break;
 				case 2:
-					twoStarSamples.add(singleSamples);
+					twoStarSamples.add(singleSample);
 					break;
 				case 3:
-					threeStarSamples.add(singleSamples);
+					threeStarSamples.add(singleSample);
 					break;
 				case 4:
-					fourStarSamples.add(singleSamples);
+					fourStarSamples.add(singleSample);
 					break;
 				case 5:
-					fiveStarSamples.add(singleSamples);
+					fiveStarSamples.add(singleSample);
 					break;
 			}
-			MessageFormat messsageFormat = new MessageFormat("process {0} lines!");
-			System.out.println(messsageFormat.format(++lineNums));
+			// MessageFormat messsageFormat = new MessageFormat("process {0} lines!");
+			System.out.print(MessageFormat.format("process {0} lines!\t\r",Integer.toString(++lineNums)));
 		}
+		br.close();
 		sampleNums = lineNums;
+		System.out.println();
 	}
 
 	public void training(double alpha,int iternums) throws Exception
@@ -104,7 +114,7 @@ public class SoftmaxRegression
 		{
 			ArrayList<Double> expResult = getInner(starSample);
 			double sum = expResult.stream().mapToDouble(o1 -> o1).sum();
-			for(int j=0; j<classNums; j++)
+			for(int j=0; j<parameterNums; j++)
 			{
 				double p = expResult.get(j)/sum;
 				if(j == starIndex)
@@ -163,29 +173,24 @@ public class SoftmaxRegression
 
 	private ArrayList<Double> getInner(ArrayList<Double> singleSamples) 
 	{
-		ArrayList<Double> result = new ArrayList<Double>(classNums);
+		ArrayList<Double> result = new ArrayList<Double>(starNums);
 		parameters
 		.stream()
 		.map(o1 -> {return Math.exp(computeInner(o1,singleSamples));})
 		.forEach(o1 -> {result.add(o1);});
-		
 
-		// List<Double> list = parameters
-		// .stream()
-		// .map(x -> {
-		// 	try{
-		// 		return Math.exp(computeInner(x,singleSamples));
-		// 	}catch (Exception e){
-				
-		// 	}
-		// });
-		// list.stream().forEach(o1 -> {result.add(o1);});
 		return result;
 	}
 
 	private double computeGradient4lineJ(int y,int j)
 	{
 		return 0;
+	}
+
+	public static void main(String[] args) throws Exception
+	{
+		SoftmaxRegression softmaxRegression = new SoftmaxRegression(5,500);
+		softmaxRegression.initilize("/home/lee/material/corpus/jd/4train.txt");
 	}
 
 }
