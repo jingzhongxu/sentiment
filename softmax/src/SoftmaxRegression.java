@@ -89,20 +89,43 @@ public class SoftmaxRegression
 	{
 		for(int iter=0; iter<iternums; iter++)
 		{
-			for(ArrayList<Double> oneStarSample : oneStarSamples)
+			System.out.println("iter " + iter + " times");
+			traverseSamplesAndUpdateParameter(alpha,oneStarSamples,0);
+			traverseSamplesAndUpdateParameter(alpha,twoStarSamples,1);
+			traverseSamplesAndUpdateParameter(alpha,threeStarSamples,2);
+			traverseSamplesAndUpdateParameter(alpha,fourStarSamples,3);
+			traverseSamplesAndUpdateParameter(alpha,fiveStarSamples,4);
+		}
+	}
+
+	private void traverseSamplesAndUpdateParameter(double alpha,ArrayList<ArrayList<Double>> starSamples,int starIndex)
+	{
+		for(ArrayList<Double> starSample : starSamples)
+		{
+			ArrayList<Double> expResult = getInner(starSample);
+			double sum = expResult.stream().mapToDouble(o1 -> o1).sum();
+			for(int j=0; j<classNums; j++)
 			{
-				ArrayList<Double> expResult = getInner(oneStarSample);
-				double sum = expResult.stream().mapToDouble(o1 -> o1).sum();
-				for(int j=0; j<classNums; j++)
-				{
-					double p = expResult.get(0)/sum;
+				double p = expResult.get(j)/sum;
+				if(j == starIndex)
+				{	
 					for(int n=0; n<parameterNums; n++)
 					{
-
+						double para_old = parameters.get(j).get(n);
+						double para_new = para_old + alpha * starSample.get(n) * (1 - p);
+						parameters.get(j).set(n,para_new);
 					}
 				}
+				else
+				{
+					for(int n=0; n<parameterNums; n++)
+					{
+						double para_old = parameters.get(j).get(n);
+						double para_new = para_old + alpha * starSample.get(n) * (-1) * p;
+						parameters.get(j).set(n,para_new);
+					}						
+				}
 			}
-
 		}
 	}
 
@@ -121,11 +144,6 @@ public class SoftmaxRegression
 			sum += thetaVector.get(i) * singleSamples.get(i);
 		}
 		return sum;
-	}
-
-	private double computeGradient()
-	{
-		return 0;
 	}
 
 	public double computeProbabilityOfGivenXAndEqualsJ(int j,ArrayList<Double> singleSamples) 
