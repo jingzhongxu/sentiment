@@ -106,11 +106,12 @@ public class SoftmaxRegression
 		}
 	}
 
-	private double computeInner(ArrayList<Double> thetaVector,ArrayList<Double> singleSamples) throws Exception
+	private double computeInner(ArrayList<Double> thetaVector,ArrayList<Double> singleSamples) 
 	{
 		if(thetaVector.size()!= singleSamples.size())
 		{
-			throw new Exception("the length is wrong in computeInner");
+			System.out.println("the length is wrong in computeInner");
+			return -1;
 		}		
 		
 		double sum = 0;
@@ -127,7 +128,7 @@ public class SoftmaxRegression
 		return 0;
 	}
 
-	public double computeProbabilityOfGivenXAndEqualsJ(int j,ArrayList<Double> singleSamples) throws Exception
+	public double computeProbabilityOfGivenXAndEqualsJ(int j,ArrayList<Double> singleSamples) 
 	{
 		double pj = 0.0;
 		double sum = 0.0;
@@ -142,20 +143,25 @@ public class SoftmaxRegression
 		return pj/sum;
 	}
 
-	private ArrayList<Double> getInner(ArrayList<Double> singleSamples) throws Exception
+	private ArrayList<Double> getInner(ArrayList<Double> singleSamples) 
 	{
 		ArrayList<Double> result = new ArrayList<Double>(classNums);
 		parameters
 		.stream()
-		.map(o1 -> { 
-			try{
-				return Math.exp(computeInner(o1,singleSamples));
-			}
-			catch(Exception e){
-				throw e;
-			}
-		})
+		.map(o1 -> {return Math.exp(computeInner(o1,singleSamples));})
 		.forEach(o1 -> {result.add(o1);});
+		
+
+		// List<Double> list = parameters
+		// .stream()
+		// .map(x -> {
+		// 	try{
+		// 		return Math.exp(computeInner(x,singleSamples));
+		// 	}catch (Exception e){
+				
+		// 	}
+		// });
+		// list.stream().forEach(o1 -> {result.add(o1);});
 		return result;
 	}
 
