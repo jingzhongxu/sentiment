@@ -11,5 +11,5 @@ import com.mongodb.ServerAddress;
 
 public class SoftmaxRegressionWithMongo
 {
-
+	
 }
