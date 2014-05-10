@@ -114,7 +114,7 @@ public class SoftmaxRegression
 		{
 			ArrayList<Double> expResult = getInner(starSample);
 			double sum = expResult.stream().mapToDouble(o1 -> o1).sum();
-			for(int j=0; j<parameterNums; j++)
+			for(int j=0; j<starNums; j++)
 			{
 				double p = expResult.get(j)/sum;
 				if(j == starIndex)

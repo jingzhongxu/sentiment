@@ -23,9 +23,9 @@ import java.util.Collections;
 public class Mongo4SoftTest
 {
 
-	public static ArrayList<Double> getDataFromMongo(DBObject DBObect)
+	public static ArrayList<Double> getDataFromMongo(DBObject dBObect)
 	{
-		Map map = DBObect.toMap();
+		Map map = dBObect.toMap();
 		int parameterNums = map.size()-1;//减去id这个键值
 
 		// List<Double> list = new ArrayList<Double>(parameterNums);
