@@ -186,7 +186,7 @@ public class SoftmaxRegressionWithMongo
 			{
 				bw.write(parameters.get(j).get(t) + " ");
 			}
-			bw.write("\n\n");
+			bw.write("\n");
 		}
 		bw.close();
 	}
@@ -194,7 +194,7 @@ public class SoftmaxRegressionWithMongo
 	public static void main(String[] args) throws Exception
 	{
 		SoftmaxRegressionWithMongo obj = new SoftmaxRegressionWithMongo(500);
-		obj.training(0.01,50);
+		obj.training(0.00001,1);
 		obj.outputTrainResult("./result/trainResult_500.out");
 	}
 }
