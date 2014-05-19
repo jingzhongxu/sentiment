@@ -31,7 +31,7 @@ public class SoftmaxRegressionWithMongo
 	public DBCollection collection5;
 
 
-	public SoftmaxRegressionWithMongo(int parameterNums) throws Exception
+	public SoftmaxRegressionWithMongo(int parameterNums,String database) throws Exception
 	{
 		this.parameterNums = parameterNums;
 		ArrayList<Double> singlePara = new ArrayList<Double>(Collections.nCopies(parameterNums,0.0));
@@ -44,7 +44,8 @@ public class SoftmaxRegressionWithMongo
 
 		//初始化数据库相关
 		mongoClient = new MongoClient("localhost",44444);
-		db = mongoClient.getDB("trainData");
+		// db = mongoClient.getDB("trainData");
+		db = mongoClient.getDB(database);
 		collection1 = db.getCollection("collection1");
 		collection2 = db.getCollection("collection2");
 		collection3 = db.getCollection("collection3");
@@ -80,8 +81,8 @@ public class SoftmaxRegressionWithMongo
 			train4EachCollection(collection1,alpha,1);
 			train4EachCollection(collection2,alpha,2);
 			train4EachCollection(collection3,alpha,3);
-			train4EachCollection(collection4,alpha,4);
 			train4EachCollection(collection5,alpha,5);
+			train4EachCollection(collection4,alpha,4);
 		}
 	}
 
@@ -129,9 +130,154 @@ public class SoftmaxRegressionWithMongo
 
 			}
 			System.out.print(MessageFormat.format("process  collection{0} {1} lines!\t\r",label,Integer.toString(lineNum++)));
+			
+
+			if(lineNum>50000)
+				break;
+
 		}
+		System.out.println();
 		cursor.close();
 	}
+
+	public void trainRandom(double alpha,int iternums) throws Exception
+	{
+		for(int iter=0; iter<iternums; iter++)
+		{
+			System.out.println("\n iter " + iter + " times");			
+			
+			DBCursor cursor_1 = collection1.find();
+			DBCursor cursor_2 = collection2.find();
+			DBCursor cursor_3 = collection3.find();
+			DBCursor cursor_4 = collection4.find();
+			DBCursor cursor_5 = collection5.find();
+
+			int allNum = cursor_1.count() + cursor_2.count() + cursor_3.count() + cursor_4.count() + cursor_5.count();
+			int lineNum = 0;
+
+			while(lineNum < allNum)
+			{
+				int randomCollectionIndex = (int)(Math.random() * 5) + 1;
+				DBObject dBObject;
+				switch(randomCollectionIndex)
+				{
+					case 1:
+						if(cursor_1.hasNext())
+						{
+							dBObject = cursor_1.next();
+							work4trainRandom(dBObject,1,alpha);
+							System.out.print(MessageFormat.format("process  collection{0} all {1} lines\t\r",randomCollectionIndex,++lineNum));
+						}
+						break;
+					case 2:
+						if(cursor_2.hasNext())
+						{
+							dBObject = cursor_2.next();
+							work4trainRandom(dBObject,2,alpha);
+							System.out.print(MessageFormat.format("process  collection{0} all {1} lines\t\r",randomCollectionIndex,++lineNum));							
+						}
+						break;
+					case 3:
+						if(cursor_3.hasNext())
+						{
+							dBObject = cursor_3.next();
+							work4trainRandom(dBObject,3,alpha);
+							System.out.print(MessageFormat.format("process  collection{0} all {1} lines\t\r",randomCollectionIndex,++lineNum));	
+						}				
+						break;
+					case 4:
+						if(cursor_4.hasNext())
+						{
+							dBObject = cursor_4.next();
+							work4trainRandom(dBObject,4,alpha);
+							System.out.print(MessageFormat.format("process  collection{0} all {1} lines\t\r",randomCollectionIndex,++lineNum));
+						}
+						break;
+					case 5:
+						if(cursor_5.hasNext())
+						{					
+							dBObject = cursor_5.next();
+							work4trainRandom(dBObject,5,alpha);
+							System.out.print(MessageFormat.format("process  collection{0} all {1} lines\t\r",randomCollectionIndex,++lineNum));
+						}
+						break;
+				}//switch
+			}//while
+			System.out.println();
+		}//for
+
+
+			// while(cursor_1.hasNext() || cursor_2.hasNext() || cursor_3.hasNext() || cursor_4.hasNext() || cursor_5.hasNext())
+			// {
+			// 	int randomCollectionIndex = (int)(Math.random() * 5) + 1;
+			// 	DBObject dBObject;
+			// 	switch(randomCollectionIndex)
+			// 	{
+			// 		case 1:
+			// 			dBObject = cursor_1.next();
+			// 			work4trainRandom(dBObject,1,alpha);
+			// 			break;
+			// 		case 2:
+			// 			dBObject = cursor_2.next();
+			// 			work4trainRandom(dBObject,2,alpha);
+			// 			break;
+			// 		case 3:
+			// 			dBObject = cursor_3.next();
+			// 			work4trainRandom(dBObject,3,alpha);					
+			// 			break;
+			// 		case 4:
+			// 			dBObject = cursor_4.next();
+			// 			work4trainRandom(dBObject,4,alpha);
+			// 			break;
+			// 		case 5:
+			// 			dBObject = cursor_5.next();
+			// 			work4trainRandom(dBObject,5,alpha);
+			// 			break;
+			// 	}
+			// 	System.out.print(MessageFormat.format("process  collection{0} all {1} lines\t\r",randomCollectionIndex,++lineNum));
+			// }//while
+		// }//for
+		System.out.println();
+	}
+
+	private void work4trainRandom(DBObject dBObject , int lable, double alpha)
+	{
+		ArrayList<Double> singleSample = work4GetSampleFromDB(dBObject);
+		ArrayList<Double> expResult = getEveryStarInner(singleSample);
+		double sum = expResult.stream().mapToDouble(o1 -> o1).sum();
+
+		for(int j =0; j<starNums; j++)
+		{
+			double p = expResult.get(j)/sum;
+
+			if(j==lable-1)
+			{
+				for(int n=0; n<parameterNums; n++)
+				{
+					if(singleSample.get(n) == 0)
+						continue;
+
+					double para_old = parameters.get(j).get(n);
+					double para_new = para_old + alpha * singleSample.get(n) * (1 - p);
+					parameters.get(j).set(n,para_new);
+				}
+			}
+			else
+			{
+				for(int n=0; n<parameterNums; n++)
+				{
+					if(singleSample.get(n) == 0)
+						continue;
+
+					double para_old = parameters.get(j).get(n);
+					double para_new = para_old + alpha * singleSample.get(n) * (-1) * p;
+					parameters.get(j).set(n,para_new);
+				}					
+			}
+
+		}	
+	}
+
 
 	private double computeInner(ArrayList<Double> thetaVector,ArrayList<Double> singleSample) 
 	{
@@ -193,8 +339,14 @@ public class SoftmaxRegressionWithMongo
 
 	public static void main(String[] args) throws Exception
 	{
-		SoftmaxRegressionWithMongo obj = new SoftmaxRegressionWithMongo(500);
-		obj.training(0.00001,1);
+
+		// SoftmaxRegressionWithMongo obj = new SoftmaxRegressionWithMongo(500,"trainData");
+		// obj.training(0.00001,1);
+		// obj.outputTrainResult("./result/trainResult_500.out");
+
+
+		SoftmaxRegressionWithMongo obj = new SoftmaxRegressionWithMongo(500,"trainData2");
+		obj.trainRandom(0.00001,50);
 		obj.outputTrainResult("./result/trainResult_500.out");
 	}
 }
