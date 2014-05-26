@@ -12,8 +12,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.Map;
 import java.text.MessageFormat;
+import java.util.Arrays;
 
 public class OutputResult
 {
@@ -48,7 +50,7 @@ public class OutputResult
 		String content;
 		while(null != (content = br.readLine()))
 		{
-			ArrayList<Double> temp = Collections.ncopies(parameterNums,0.0);
+			ArrayList<Double> temp = new ArrayList<Double>(Collections.nCopies(parameterNums,0.0));
 			String[] tokens = content.split(" ");
 			for(int i = 0; i<tokens.length; i++)
 			{
@@ -59,21 +61,39 @@ public class OutputResult
 		br.close();
 	}
 
-	public void getResult()
+	public void getResult(String outputResultFile) throws Exception
 	{
-
+		FileWriter fw = new FileWriter(outputResultFile);
+		processEachCol(collection1,1,fw);
+		processEachCol(collection1,2,fw);
+		processEachCol(collection1,3,fw);
+		processEachCol(collection1,4,fw);
+		processEachCol(collection1,5,fw);		
+		fw.close();
 	}
 
-	private void trainEach(DBCollection colletion,int label)
+	private void processEachCol(DBCollection collection,int label,FileWriter fw) throws Exception
 	{
-		Cursor cursor = collection.find();
+		fw.write(collection.getName() + ": \n");
+		DBCursor cursor = collection.find();
 		while(cursor.hasNext())
 		{
 			DBObject dBObject = cursor.next();
 			ArrayList<Double> singleSample = work4GetSampleFromDB(dBObject);
 			ArrayList<Double> result = getEveryStarInner(singleSample);
-			
+			ArrayList<Integer> indexSort = new ArrayList<Integer>(Arrays.asList(0,1,2,3,4));
+			indexSort.sort((o1,o2) -> {if(result.get(o1) > result.get(o2))
+											return -1;
+									   else
+									   		return 1;
+			 							});
+
+			int result_one = indexSort.get(0) + 1;//这里直接转化为我的label,所以需要+1
+			int result_two = indexSort.get(1) + 1; 
+			fw.write("accuracy:" + label + "  result_one:" + result_one + " value=" + result.get(indexSort.get(0)) + "   result_two:" + result_two + " value=" + result.get(indexSort.get(1)) + "\n");
 		}
+
+		fw.write("\n\n");
 	}
 
 	private ArrayList<Double> work4GetSampleFromDB(DBObject dBObject)
@@ -118,9 +138,10 @@ public class OutputResult
 	}
 
 
-	public static void main(String[] args) throws Exceptions
+	public static void main(String[] args) throws Exception
 	{
 		OutputResult obj = new OutputResult("./result/trainResult_500.out",500);
+		obj.getResult("./result/top2.out");
 
 	}
 }
