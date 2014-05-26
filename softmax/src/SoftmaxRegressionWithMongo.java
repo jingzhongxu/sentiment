@@ -206,37 +206,6 @@ public class SoftmaxRegressionWithMongo
 			System.out.println();
 		}//for
 
-
-			// while(cursor_1.hasNext() || cursor_2.hasNext() || cursor_3.hasNext() || cursor_4.hasNext() || cursor_5.hasNext())
-			// {
-			// 	int randomCollectionIndex = (int)(Math.random() * 5) + 1;
-			// 	DBObject dBObject;
-			// 	switch(randomCollectionIndex)
-			// 	{
-			// 		case 1:
-			// 			dBObject = cursor_1.next();
-			// 			work4trainRandom(dBObject,1,alpha);
-			// 			break;
-			// 		case 2:
-			// 			dBObject = cursor_2.next();
-			// 			work4trainRandom(dBObject,2,alpha);
-			// 			break;
-			// 		case 3:
-			// 			dBObject = cursor_3.next();
-			// 			work4trainRandom(dBObject,3,alpha);					
-			// 			break;
-			// 		case 4:
-			// 			dBObject = cursor_4.next();
-			// 			work4trainRandom(dBObject,4,alpha);
-			// 			break;
-			// 		case 5:
-			// 			dBObject = cursor_5.next();
-			// 			work4trainRandom(dBObject,5,alpha);
-			// 			break;
-			// 	}
-			// 	System.out.print(MessageFormat.format("process  collection{0} all {1} lines\t\r",randomCollectionIndex,++lineNum));
-			// }//while
-		// }//for
 		System.out.println();
 	}
 
@@ -346,7 +315,7 @@ public class SoftmaxRegressionWithMongo
 
 
 		SoftmaxRegressionWithMongo obj = new SoftmaxRegressionWithMongo(500,"trainData2");
-		obj.trainRandom(0.00001,50);
+		obj.trainRandom(0.0001,50);
 		obj.outputTrainResult("./result/trainResult_500.out");
 	}
 }

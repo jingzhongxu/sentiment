@@ -107,7 +107,6 @@ public class OutputResult
 
 	private double computeInner(ArrayList<Double> thetaVector,ArrayList<Double> singleSample) 
 	{	
-		
 		double sum = 0;
 
 		for(int i=0; i<thetaVector.size(); i++)
