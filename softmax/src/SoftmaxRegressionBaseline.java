@@ -17,7 +17,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 
 
-public class SoftmaxRegressionWithMongo
+public class SoftmaxRegressionBaseline
 {
 	public int parameterNums;
 	public ArrayList<ArrayList<Double>> parameters;
@@ -30,8 +30,7 @@ public class SoftmaxRegressionWithMongo
 	public DBCollection collection4;
 	public DBCollection collection5;
 
-
-	public SoftmaxRegressionWithMongo(int parameterNums,String database) throws Exception
+	public SoftmaxRegressionBaseline(int parameterNums,String database) throws Exception
 	{
 		this.parameterNums = parameterNums;
 		ArrayList<Double> singlePara = new ArrayList<Double>(Collections.nCopies(parameterNums,0.0));
@@ -42,101 +41,31 @@ public class SoftmaxRegressionWithMongo
 			parameters.add((ArrayList<Double>)singlePara.clone());
 		}
 
-		//初始化数据库相关
+		// 初始化mongo
 		mongoClient = new MongoClient("localhost",44444);
-		// db = mongoClient.getDB("trainData");
 		db = mongoClient.getDB(database);
 		collection1 = db.getCollection("collection1");
 		collection2 = db.getCollection("collection2");
 		collection3 = db.getCollection("collection3");
 		collection4 = db.getCollection("collection4");
-		collection5 = db.getCollection("collection5"); 
+		collection5 = db.getCollection("collection5"); 		
 	}
 
-	//这个是从数据库中读取的数据转化为可以训练的sample
+	//这个是从数据库中读取的数据转化为可以训练的sample,这个数据格式在数据库中是不同的。这次读取的数据格式是只存储非零数据
 	private ArrayList<Double> work4GetSampleFromDB(DBObject dBObect)
 	{
 		Map map = dBObect.toMap();
 		ArrayList<Double> list = new ArrayList<Double>(Collections.nCopies(parameterNums,0.0));
 		map.forEach((key,value) -> {
-			if(key.equals("_id"))
-				return;
-			else{
-				double para = Double.valueOf((String)value);
-				if(para == 0.0)
-					return;
-				int index = Integer.valueOf((String)key) -1;
-				list.set(index,para);
+			
+			if(((String)key).matches("\\d+"))
+			{
+				//这次的下标在数据库中是从0开始的，之前的是从1开始的
+				list.set(Integer.valueOf((String)key),Double.valueOf((String)value));
 			}
+
 		});
 		return list;
-	}
-
-
-	public void training(double alpha,int iternums) throws Exception
-	{
-		for(int iter=0; iter<iternums; iter++)
-		{
-			System.out.println("\n iter " + iter + " times");
-			train4EachCollection(collection1,alpha,1);
-			train4EachCollection(collection2,alpha,2);
-			train4EachCollection(collection3,alpha,3);
-			train4EachCollection(collection4,alpha,4);
-			train4EachCollection(collection5,alpha,5);
-		}
-	}
-
-	private void train4EachCollection(DBCollection dbCollection,double alpha,int label)
-	{
-		ArrayList<Double> singleSample;
-		DBCursor cursor = dbCollection.find();
-		int lineNum = 1;
-		while(cursor.hasNext())
-		{
-			DBObject dBObect = cursor.next();
-			singleSample = work4GetSampleFromDB(dBObect);
-			
-			ArrayList<Double> expResult = getEveryStarInner(singleSample);
-			double sum = expResult.stream().mapToDouble(o1 -> o1).sum();
-
-			for(int j =0; j<starNums; j++)
-			{
-				double p = expResult.get(j)/sum;
-
-				if(j==label-1)
-				{
-					for(int n=0; n<parameterNums; n++)
-					{
-						if(singleSample.get(n) == 0)
-							continue;
-
-						double para_old = parameters.get(j).get(n);
-						double para_new = para_old + alpha * singleSample.get(n) * (1 - p);
-						parameters.get(j).set(n,para_new);
-					}
-				}
-				else
-				{
-					for(int n=0; n<parameterNums; n++)
-					{
-						if(singleSample.get(n) == 0)
-							continue;
-
-						double para_old = parameters.get(j).get(n);
-						double para_new = para_old + alpha * singleSample.get(n) * (-1) * p;
-						parameters.get(j).set(n,para_new);
-					}					
-				}
-
-			}
-			System.out.print(" process " + dbCollection.getName() + MessageFormat.format(" {1} lines!\t\r",Integer.toString(lineNum++)));
-
-			if(lineNum>50000)
-				break;
-
-		}
-		System.out.println();
-		cursor.close();
 	}
 
 	public void trainRandom(double alpha,int iternums) throws Exception
@@ -305,16 +234,11 @@ public class SoftmaxRegressionWithMongo
 		bw.close();
 	}
 
-	public static void main(String[] args) throws Exception
+	public static void main(String[] args)
 	{
-
-		// SoftmaxRegressionWithMongo obj = new SoftmaxRegressionWithMongo(500,"trainData");
-		// obj.training(0.00001,1);
-		// obj.outputTrainResult("./result/trainResult_500.out");
-
-
-		SoftmaxRegressionWithMongo obj = new SoftmaxRegressionWithMongo(500,"trainData2");
-		obj.trainRandom(0.0001,50);
-		obj.outputTrainResult("./result/trainResult_500.out");
+		SoftmaxRegressionBaseline baseline = new SoftmaxRegressionBaseline();
+		baseline.trainRandom(0.0001,50);
+		baseline.outputTrainResult("./result/trainResult_baseline.out");
 	}
+
 }
