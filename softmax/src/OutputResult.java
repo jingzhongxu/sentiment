@@ -65,10 +65,10 @@ public class OutputResult
 	{
 		FileWriter fw = new FileWriter(outputResultFile);
 		processEachCol(collection1,1,fw);
-		processEachCol(collection1,2,fw);
-		processEachCol(collection1,3,fw);
-		processEachCol(collection1,4,fw);
-		processEachCol(collection1,5,fw);		
+		processEachCol(collection2,2,fw);
+		processEachCol(collection3,3,fw);
+		processEachCol(collection4,4,fw);
+		processEachCol(collection5,5,fw);		
 		fw.close();
 	}
 
