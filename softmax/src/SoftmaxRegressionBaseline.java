@@ -61,7 +61,7 @@ public class SoftmaxRegressionBaseline
 			if(((String)key).matches("\\d+"))
 			{
 				//这次的下标在数据库中是从0开始的，之前的是从1开始的
-				list.set(Integer.valueOf((String)key),Double.valueOf((String)value));
+				list.set(Integer.valueOf((String)key),((Integer)value).doubleValue());
 			}
 
 		});
@@ -234,7 +234,7 @@ public class SoftmaxRegressionBaseline
 		bw.close();
 	}
 
-	public static void main(String[] args)
+	public static void main(String[] args) throws Exception
 	{
 		SoftmaxRegressionBaseline baseline = new SoftmaxRegressionBaseline(50829,"vsmTrain");
 		baseline.trainRandom(0.0001,50);
