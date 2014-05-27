@@ -14,6 +14,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.Map;
 import java.text.MessageFormat;
+import java.util.Arrays;
 
 public class TestTrainResult
 {
@@ -193,7 +194,7 @@ public class TestTrainResult
 
 	}
 
-	private void processEachCollectionMoreLoose(DBCollection colleciton,int label,ArrayList<Boolean> result)
+	private void processEachCollectionMoreLoose(DBCollection collection,int label,ArrayList<Boolean> result)
 	{
 		DBCursor cursor  = collection.find();
 		int cursor_num = 0;
@@ -201,7 +202,7 @@ public class TestTrainResult
 		while(cursor.hasNext())
 		{
 			DBObject obj = cursor.next();
-			ArrayList<Double> singleSample = work4GetSampleFromDB(dBObect);
+			ArrayList<Double> singleSample = work4GetSampleFromDB(obj);
 			ArrayList<Double> inners = getEveryStarInner(singleSample);	
 			ArrayList<Integer> indexSort = new ArrayList<Integer>(Arrays.asList(0,1,2,3,4));
 			indexSort.sort((o1,o2) -> {if(inners.get(o1) > inners.get(o2))
