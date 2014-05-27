@@ -176,6 +176,78 @@ public class TestTrainResult
 		}
 	}
 
+	public void processMoreLoose()
+	{
+
+		results = new ArrayList<ArrayList<Boolean>>(starNums);
+		results.add(initSingleResult(collection1));
+		results.add(initSingleResult(collection2));
+		results.add(initSingleResult(collection3));
+		results.add(initSingleResult(collection4));
+		results.add(initSingleResult(collection5));
+		processEachCollectionMoreLoose(collection1,1,results.get(0));
+		processEachCollectionMoreLoose(collection2,2,results.get(1));
+		processEachCollectionMoreLoose(collection3,3,results.get(2));
+		processEachCollectionMoreLoose(collection4,4,results.get(3));
+		processEachCollectionMoreLoose(collection5,5,results.get(4));
+
+	}
+
+	private void processEachCollectionMoreLoose(DBCollection colleciton,int label,ArrayList<Boolean> result)
+	{
+		DBCursor cursor  = collection.find();
+		int cursor_num = 0;
+
+		while(cursor.hasNext())
+		{
+			DBObject obj = cursor.next();
+			ArrayList<Double> singleSample = work4GetSampleFromDB(dBObect);
+			ArrayList<Double> inners = getEveryStarInner(singleSample);	
+			ArrayList<Integer> indexSort = new ArrayList<Integer>(Arrays.asList(0,1,2,3,4));
+			indexSort.sort((o1,o2) -> {if(inners.get(o1) > inners.get(o2))
+											return -1;
+									   else
+									   		return 1;
+			 							});
+
+			int result_label = indexSort.get(0) + 1;//实际的label没有从0开始
+			switch(label)
+			{
+				case 1:
+					if(result_label==1 || result_label==2)
+						result.set(cursor_num,true);
+					else
+						result.set(cursor_num,false);
+					break;
+				case 2:
+					if(result_label==1 || result_label==2)
+						result.set(cursor_num,true);
+					else
+						result.set(cursor_num,false);
+					break;
+				case 3:
+					if(result_label == 3)
+						result.set(cursor_num,true);
+					else
+						result.set(cursor_num,false);
+					break;
+				case 4:
+					if(result_label==4 || result_label==5)
+						result.set(cursor_num,true);
+					else
+						result.set(cursor_num,false);
+					break;
+				case 5:
+					if(result_label==4 || result_label==5)
+						result.set(cursor_num,true);
+					else
+						result.set(cursor_num,false);
+					break;
+			}
+			cursor_num +=1;
+		}
+	}
+
 	public static void main(String[] args) throws Exception
 	{
 		TestTrainResult obj = new TestTrainResult(500,"./result/trainResult_500.out");
@@ -185,6 +257,8 @@ public class TestTrainResult
 		// System.out.println(obj.parameters.get(3).get(1));
 		obj.processResult();
 		obj.outputResult();
+
+
 	}
 
 }
