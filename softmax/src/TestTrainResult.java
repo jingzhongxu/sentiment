@@ -245,8 +245,9 @@ public class TestTrainResult
 						result.set(cursor_num,false);
 					break;
 			}
-			cursor_num +=1;
+			System.out.print(MessageFormat.format("process  collection{0} {1} lines!\t\r",label,Integer.toString(cursor_num++)));
 		}
+		System.out.println();
 	}
 
 	public static void main(String[] args) throws Exception
@@ -256,9 +257,14 @@ public class TestTrainResult
 		// System.out.println(obj.parameters.get(1).get(1));
 		// System.out.println(obj.parameters.get(2).get(1));
 		// System.out.println(obj.parameters.get(3).get(1));
-		obj.processResult();
-		obj.outputResult();
+		
+		//这是之前的处理计算结果
+		// obj.processResult();
+		// obj.outputResult();
 
+		// 这是之后的处理结果
+		obj.processMoreLoose();
+		obj.outputResult();
 
 	}
 
