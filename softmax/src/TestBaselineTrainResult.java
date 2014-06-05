@@ -36,7 +36,7 @@ public class TestBaselineTrainResult
 
 		//初始化mongo
 		mongoClient = new MongoClient("localhost",44444);
-		db = mongoClient.getDB("testData");
+		db = mongoClient.getDB("vsmTest");
 		collection1 = db.getCollection("collection1");
 		collection2 = db.getCollection("collection2");
 		collection3 = db.getCollection("collection3");
