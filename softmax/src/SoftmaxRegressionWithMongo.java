@@ -315,6 +315,6 @@ public class SoftmaxRegressionWithMongo
 
 		SoftmaxRegressionWithMongo obj = new SoftmaxRegressionWithMongo(500,"trainData2");
 		obj.trainRandom(0.0001,50);
-		obj.outputTrainResult("./result/trainResult_500.out");
+		obj.outputTrainResult("./result/trainResult_500.train");
 	}
 }
