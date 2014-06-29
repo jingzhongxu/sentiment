@@ -140,7 +140,7 @@ public class TestBaselineTrainResult
 		System.out.println();
 	}
 
-	private ArrayList<Double> work4GetSampleFromDB(DBObject obj)
+	public ArrayList<Double> work4GetSampleFromDB(DBObject obj)
 	{
 		Map map = obj.toMap();
 		ArrayList<Double> list = new ArrayList<Double>(Collections.nCopies(parameterNums,0.0));
@@ -154,7 +154,7 @@ public class TestBaselineTrainResult
 	}
 
 
-	private ArrayList<Double> getEveryStarInner(ArrayList<Double> singleSample) 
+	public ArrayList<Double> getEveryStarInner(ArrayList<Double> singleSample) 
 	{
 		ArrayList<Double> result = new ArrayList<Double>(starNums);
 		parameters
