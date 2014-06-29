@@ -191,7 +191,7 @@ public class TestBaselineTrainResult
 
 	public static void main(String[] args) throws Exception
 	{
-		TestBaselineTrainResult obj = new TestBaselineTrainResult(50829,"./result/trainResult_baseline.out");
+		TestBaselineTrainResult obj = new TestBaselineTrainResult(50829,"./result/trainResult_baseline.result");
 		obj.processMoreLoose();
 		obj.outputResult();
 	}

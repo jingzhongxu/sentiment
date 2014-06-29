@@ -80,7 +80,7 @@ public class TestTrainResult
 
 	}
 
-	private ArrayList<Boolean> initSingleResult(DBCollection colleciton)
+	public ArrayList<Boolean> initSingleResult(DBCollection colleciton)
 	{
 		return new ArrayList<Boolean>(Collections.nCopies((int)colleciton.count(),false));
 	}
@@ -122,7 +122,7 @@ public class TestTrainResult
 	}
 
 	//这个是从数据库中读取的数据转化为可以训练的sample
-	private ArrayList<Double> work4GetSampleFromDB(DBObject dBObect)
+	public ArrayList<Double> work4GetSampleFromDB(DBObject dBObect)
 	{
 		Map map = dBObect.toMap();
 		ArrayList<Double> list = new ArrayList<Double>(Collections.nCopies(parameterNums,0.0));
@@ -140,7 +140,7 @@ public class TestTrainResult
 		return list;
 	}
 
-	private ArrayList<Double> getEveryStarInner(ArrayList<Double> singleSample) 
+	public ArrayList<Double> getEveryStarInner(ArrayList<Double> singleSample) 
 	{
 		ArrayList<Double> result = new ArrayList<Double>(starNums);
 		parameters
@@ -252,7 +252,7 @@ public class TestTrainResult
 
 	public static void main(String[] args) throws Exception
 	{
-		TestTrainResult obj = new TestTrainResult(500,"./result/trainResult_500.out");
+		TestTrainResult obj = new TestTrainResult(500,"./result/trainResult_500.result");
 		// System.out.println(obj.parameters.get(0).get(1));
 		// System.out.println(obj.parameters.get(1).get(1));
 		// System.out.println(obj.parameters.get(2).get(1));
