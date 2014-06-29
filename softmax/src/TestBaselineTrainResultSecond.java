@@ -229,7 +229,7 @@ public class TestBaselineTrainResultSecond extends TestBaselineTrainResult
 			int nums =(int) (results.get(j).stream()
 			.filter(o1 -> o1==true)
 			.count());
-			System.out.println(nums + "  " + results.get(j).size() );			
+			System.out.println(nums + "  " + results.get(j).size() + "    " + ((float)nums/results.get(j).size()) );			
 		}
 
 		System.out.println("--------------------------------------------\nnow is output accuracy:");
@@ -237,7 +237,7 @@ public class TestBaselineTrainResultSecond extends TestBaselineTrainResult
 		{
 			int nums = (int) (accuracys.get(i).stream().
 				filter(o1 -> o1==true)).count();
-			System.out.println(nums + "   " + accuracys.get(i).size());
+			System.out.println(nums + "   " + accuracys.get(i).size() + "    " + ((float)nums/accuracys.get(i).size()));
 		}
 	}
 
