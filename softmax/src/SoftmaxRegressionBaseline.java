@@ -238,7 +238,9 @@ public class SoftmaxRegressionBaseline
 	{
 		SoftmaxRegressionBaseline baseline = new SoftmaxRegressionBaseline(50829,"vsmTrain");
 		baseline.trainRandom(0.0001,50);
+
 		baseline.outputTrainResult("./result/trainResult_baseline.result");
+
 	}
 
 }
